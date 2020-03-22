@@ -8,13 +8,10 @@ import pandas as pd
 from provincias import provincias as pcias
 from provincias import status
 
-DATA = './data'
-infar = 'datos_infectologia_argentina.xlsx'
-
-taburl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub?output=xls"
+TABLA_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub?output=xls"
 
 
-def parse_urltable(taburl=taburl, tabshape='wide'):
+def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
     #load table and replace Nan by zeros
     df_infar = pd.read_excel(taburl, sheet_name=0, nrows=96).fillna(0)
     #df_infar_t = pd.read_excel(os.path.join(DATA, infar), sheet_name=1)
