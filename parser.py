@@ -2,6 +2,7 @@
 """Parser of data tables"""
 
 import os
+from datetime import datetime
 import numpy as np 
 import pandas as pd 
 
@@ -33,17 +34,27 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
             provincia = provincia.strip()
         else:
             provincia = pcia[0].strip()
-        p_code = pcias.get(provincia)
+        provincia_code = pcias.get(provincia)
 
-        df_infar.loc[arow.name, 'cod_provincia'] = p_code
-        df_infar.loc[arow.name, 'cod_status'] = stat
-        df_infar.loc[arow.name, 'provincia_status'] = p_code+'_'+stat
+        df_infar.loc[irow, 'cod_provincia'] = provincia_code
+        df_infar.loc[irow, 'cod_status'] = stat
+        df_infar.loc[irow, 'provincia_status'] = provincia_code+'_'+stat
 
     index = pd.MultiIndex.from_frame(df_infar[['cod_provincia', 'cod_status']])
     df_infar.index = index
     df_infar.drop(columns=['cod_status', 'cod_provincia'], inplace=True)
     cols = list(df_infar.columns)
     df_infar = df_infar[[cols[-1]]+cols[:-1]]
+
+    for astatus in np.unique(df_infar.index.get_level_values(1)):
+        filter_confirmados = df_infar.index.get_level_values('cod_status').isin([astatus])
+        sums = df_infar[filter_confirmados].sum(axis=0)
+        dates = [adate for adate in sums.index if isinstance(adate, datetime)]
+        sums = sums[dates].astype(int)
+    
+        for date, suma in sums.iteritems():
+            df_infar.loc[('ARG', astatus), date] = suma
+        df_infar.loc[('ARG', astatus), 'provincia_status'] = 'ARG_'+astatus
 
     wide = df_infar
     long = df_infar.transpose()
