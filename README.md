@@ -8,6 +8,12 @@
 This libraries contains the utilities to access different databases
 of COVID-19 data from the IATE task force.
 
+## Installation
+
+```bash
+$ pip install arcovid19
+```
+
 ## Authors
 
 - Dr. Juan B Cabral (CIFASIS-UNR, IATE-OAC-UNC).
