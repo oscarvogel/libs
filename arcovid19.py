@@ -13,6 +13,31 @@ TABLA_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJ
 
 
 def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
+    """
+    Utility function to parse Excel table from specific URL.
+
+    Parameters
+    ----------
+
+    taburl: string
+        The url for the excel table to parse. Default is ivco19 team table
+
+    tabshape: string, 'wide' or 'long'
+        The format of the table. If wide, dates are going to be columns.
+        If in turn, long, dates are going to be rows, regions are going to be columns.
+        Under the hood is callin df.transpose() method from Pandas.
+
+    
+    Returns
+    -------
+
+    df_infar: Pandas.DataFrame object
+
+        A table parsing the Excel file spreadsheet 0 (called BD).
+        It features a pandas multi index, with the following hierarchy:
+            level 0: cod_provincia  -  Argentina states
+            level 1: cod_status  -  Four states of disease patients (R, C, A, D)
+    """
     #load table and replace Nan by zeros
     df_infar = pd.read_excel(taburl, sheet_name=0, nrows=96).fillna(0)
     #df_infar_t = pd.read_excel(os.path.join(DATA, infar), sheet_name=1)
