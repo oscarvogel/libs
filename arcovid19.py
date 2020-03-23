@@ -81,11 +81,10 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
 
         df_infar.loc[('ARG', astatus), 'provincia_status'] = 'ARG_'+astatus
 
-        if astatus == 'C':
-            #calculate growth rate
-            n_c = df_infar.loc[('ARG', 'C')][dates].values
-            growth_rate_C = (n_c[1:]/n_c[:-1])-1
-            df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
+    n_c = df_infar.loc[('ARG', 'C'), dates].values
+    growth_rate_C = (n_c[1:]/n_c[:-1])-1
+    df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
+
     # transpose if wide format
     if tabshape=='wide':
         return(df_infar)
