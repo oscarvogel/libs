@@ -77,12 +77,15 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
         filter_confirmados = df_infar.index.get_level_values('cod_status').isin([astatus])
         sums = df_infar[filter_confirmados].sum(axis=0)
         dates = [adate for adate in sums.index if isinstance(adate, datetime)]
-        sums = sums[dates].astype(int)
-    
-        for date, suma in sums.iteritems():
-            df_infar.loc[('ARG', astatus), date] = suma
+        df_infar.loc[('ARG', astatus), dates] = sums[dates].astype(int)
+
         df_infar.loc[('ARG', astatus), 'provincia_status'] = 'ARG_'+astatus
 
+        if astatus == 'C':
+            #calculate growth rate
+            n_c = df_infar.loc[('ARG', 'C')][dates].values
+            growth_rate_C = (n_c[1:]/n_c[:-1])-1
+            df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
     # transpose if wide format
     if tabshape=='wide':
         return(df_infar)
