@@ -40,11 +40,9 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
     """
     #load table and replace Nan by zeros
     df_infar = pd.read_excel(taburl, sheet_name=0, nrows=96).fillna(0)
-    #df_infar_t = pd.read_excel(os.path.join(DATA, infar), sheet_name=1)
-
+    
     # Parsear provincias en codigos standard
     df_infar.rename(columns={'Provicia \\ día': 'Pcia_status'}, inplace=True)
-
     for irow, arow in df_infar.iterrows():
         pst = arow['Pcia_status'].split()
         stat = status.get(pst[-1])
@@ -65,12 +63,16 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
         df_infar.loc[irow, 'cod_status'] = stat
         df_infar.loc[irow, 'provincia_status'] = provincia_code+'_'+stat
 
+    # reindex table with multi-index
     index = pd.MultiIndex.from_frame(df_infar[['cod_provincia', 'cod_status']])
     df_infar.index = index
+
+    # drop duplicate columns
     df_infar.drop(columns=['cod_status', 'cod_provincia'], inplace=True)
     cols = list(df_infar.columns)
     df_infar = df_infar[[cols[-1]]+cols[:-1]]
 
+    # calculate the total number per categorie per state, and the global 
     for astatus in np.unique(df_infar.index.get_level_values(1)):
         filter_confirmados = df_infar.index.get_level_values('cod_status').isin([astatus])
         sums = df_infar[filter_confirmados].sum(axis=0)
@@ -81,16 +83,15 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
             df_infar.loc[('ARG', astatus), date] = suma
         df_infar.loc[('ARG', astatus), 'provincia_status'] = 'ARG_'+astatus
 
-    wide = df_infar
-    long = df_infar.transpose()
-
+    # transpose if wide format
     if tabshape=='wide':
-        return(wide)
+        return(df_infar)
     elif tabshape=='long':
-        return(long)
+        return(df_infar.transpose())
     else:
         print('returning wide and long table')
-        return(wide, long)
+        return(df_infar, df_infar.transpose())
 
 if __name__=='__main__':
+
     print(parse_urltable())
