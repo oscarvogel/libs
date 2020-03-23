@@ -1,33 +1,146 @@
-#!/usr/bin/env python3.7 
-"""Parser of data tables"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2020, Bruno Sanchez, Mauricio Koraj, Vanessa Daza,
+#                     Juan B Cabral, Mariano Dominguez, Marcelo Lares,
+#                     Nadia Luczywo, Dante Paz, Rodrigo Quiroga,
+#                     Martín de los Ríos, Federico Stasyszyn
+# License: BSD-3-Clause
+#   Full Text: https://raw.githubusercontent.com/ivco19/libs/master/LICENSE
+
+
+# =============================================================================
+# DOCS
+# =============================================================================
+
+"""Parser of COVID-19 data from the IATE task force.
+
+"""
+
+
+__all__ = ["load_cases"]
+
+__version__ = "2020.03.22"
+
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
 
 import os
 from datetime import datetime
-import numpy as np 
-import pandas as pd 
+import logging
 
-from provincias import provincias as pcias
-from provincias import status
+import numpy as np
 
-TABLA_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub?output=xls"
+import pandas as pd
+
+import diskcache as dcache
 
 
-def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+ARCOVID19_DATA = os.path.expanduser(os.path.join('~', 'arcovid19_data'))
+
+
+DEFAULT_CACHE_DIR = os.path.join(ARCOVID19_DATA, "_cache_")
+
+
+CACHE = dcache.Cache(directory=DEFAULT_CACHE_DIR, disk_min_file_size=0)
+
+
+CACHE_EXPIRE = 60 * 60  # ONE HOUR
+
+
+TABLA_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub?output=xls"  # noqa
+
+
+PROVINCIAS = {
+    'CABA': 'CABA',
+    'Bs As': 'BA',
+    'Córdoba': 'CBA',
+    'San Luis': 'SL',
+    'Chaco': 'CHA',
+    'Río Negro': 'RN',
+    'Santa Fe': 'SF',
+    'Tierra del F': 'TF',
+    'Jujuy': 'JY',
+    'Salta': 'SAL',
+    'Entre Ríos': 'ER',
+    'Corrientes': 'COR',
+    'Santiago Est': 'SDE',
+    'Neuquen': 'NQ',
+    'Mendoza': 'MDZ',
+    'Tucumán': 'TUC',
+    'Santa Cruz': 'SC',
+    'Chubut': 'CHU',
+    'Misiones': 'MIS',
+    'Formosa': 'FOR',
+    'Catamarca': 'CAT',
+    'La Rioja': 'LAR',
+    'San Juan': 'SJU',
+    'La Pampa': 'LPA'}
+
+
+STATUS = {
+    'Recuperado': 'R',
+    'Recuperados': 'R',
+    'Confirmados': 'C',
+    'Confirmado': 'C',
+    'Activos': 'A',
+    'Muertos': 'D'}
+
+
+logger = logging.getLogger("arcovid19")
+
+
+# =============================================================================
+# FUNCTIONS_
+# =============================================================================
+
+def from_cache(fname, on_not_found, **kwargs):
+    """Simple cache orchestration.
+
     """
-    Utility function to parse Excel table from specific URL.
+    # start the cache orchestration
+    key = dcache.core.args_to_key(
+        base=("arcodiv19",), args=(fname,), kwargs=kwargs, typed=False)
+    with CACHE as cache:
+        cache.expire()
+
+        value = cache.get(key, default=dcache.core.ENOVAL, retry=True)
+        if value is dcache.core.ENOVAL:
+            value = on_not_found()
+            cache.set(
+                key, value, expire=CACHE_EXPIRE,
+                tag=f"{fname}", retry=True)
+
+    return value
+
+
+def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
+    """Utility function to parse all the actual cases of the COVID-19 in
+    Argentina.
+
 
     Parameters
     ----------
 
-    taburl: string
+    url: str
         The url for the excel table to parse. Default is ivco19 team table
 
-    tabshape: string, 'wide' or 'long'
+    orientation: str, 'wide' or 'long'
         The format of the table. If wide, dates are going to be columns.
-        If in turn, long, dates are going to be rows, regions are going to be columns.
-        Under the hood is callin df.transpose() method from Pandas.
+        If in turn, long, dates are going to be rows, regions are going to
+        be columns. Under the hood is callin df.transpose() method from Pandas.
 
-    
+    out: str, path to store the dataset or None.
+        The dataset was stored as csv file. If its None the dataset was not
+        stored.
+
+
     Returns
     -------
 
@@ -35,33 +148,43 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
 
         A table parsing the Excel file spreadsheet 0 (called BD).
         It features a pandas multi index, with the following hierarchy:
-            level 0: cod_provincia  -  Argentina states
-            level 1: cod_status  -  Four states of disease patients (R, C, A, D)
+            level 0: cod_provincia - Argentina states
+            level 1: cod_status - Four states of disease patients (R, C, A, D)
+
     """
-    #load table and replace Nan by zeros
-    df_infar = pd.read_excel(taburl, sheet_name=0, nrows=96).fillna(0)
-    
+    df_infar = from_cache(
+        fname="load_cases",
+        on_not_found=lambda: pd.read_excel(url, sheet_name=0, nrows=96),
+        url=TABLA_URL, orientation=orientation)
+
+    # load table and replace Nan by zeros
+    df_infar = df_infar.fillna(0)
+
     # Parsear provincias en codigos standard
     df_infar.rename(columns={'Provicia \\ día': 'Pcia_status'}, inplace=True)
     for irow, arow in df_infar.iterrows():
         pst = arow['Pcia_status'].split()
-        stat = status.get(pst[-1])
+        stat = STATUS.get(pst[-1])
+
         if stat is None:
-            print(stat, pst[-1], 'stopped 0')
+            logger.info(f"{stat}, {pst[-1]}, stopped 0")
             break
+
         pcia = pst[:-2]
-        if len(pcia)>1:
+        if len(pcia) > 1:
             provincia = ''
             for ap in pcia:
                 provincia += ap + ' '
             provincia = provincia.strip()
+
         else:
             provincia = pcia[0].strip()
-        provincia_code = pcias.get(provincia)
+
+        provincia_code = PROVINCIAS.get(provincia)
 
         df_infar.loc[irow, 'cod_provincia'] = provincia_code
         df_infar.loc[irow, 'cod_status'] = stat
-        df_infar.loc[irow, 'provincia_status'] = provincia_code+'_'+stat
+        df_infar.loc[irow, 'provincia_status'] = f"{provincia_code}_{stat}"
 
     # reindex table with multi-index
     index = pd.MultiIndex.from_frame(df_infar[['cod_provincia', 'cod_status']])
@@ -70,30 +193,36 @@ def parse_urltable(taburl=TABLA_URL, tabshape='wide'):
     # drop duplicate columns
     df_infar.drop(columns=['cod_status', 'cod_provincia'], inplace=True)
     cols = list(df_infar.columns)
-    df_infar = df_infar[[cols[-1]]+cols[:-1]]
+    df_infar = df_infar[[cols[-1]] + cols[:-1]]
 
-    # calculate the total number per categorie per state, and the global 
+    # calculate the total number per categorie per state, and the global
     for astatus in np.unique(df_infar.index.get_level_values(1)):
-        filter_confirmados = df_infar.index.get_level_values('cod_status').isin([astatus])
+        filter_confirmados = df_infar.index.get_level_values(
+            'cod_status').isin([astatus])
         sums = df_infar[filter_confirmados].sum(axis=0)
         dates = [adate for adate in sums.index if isinstance(adate, datetime)]
         df_infar.loc[('ARG', astatus), dates] = sums[dates].astype(int)
 
-        df_infar.loc[('ARG', astatus), 'provincia_status'] = 'ARG_'+astatus
+        df_infar.loc[('ARG', astatus), 'provincia_status'] = f"ARG_{astatus}"
 
     n_c = df_infar.loc[('ARG', 'C'), dates].values
-    growth_rate_C = (n_c[1:]/n_c[:-1])-1
+    growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
-    # transpose if wide format
-    if tabshape=='wide':
-        return(df_infar)
-    elif tabshape=='long':
-        return(df_infar.transpose())
-    else:
-        print('returning wide and long table')
-        return(df_infar, df_infar.transpose())
+    if orientation == 'long':
+        df_infar = df_infar.transpose()
+    elif orientation != 'wide':
+        raise ValueError("'orientation must be 'wide' or 'long'")
 
-if __name__=='__main__':
+    if out is not None:
+        df_infar.to_csv(out)
+    return df_infar
 
-    print(parse_urltable())
+
+# =============================================================================
+# MAIN_
+# =============================================================================
+
+if __name__ == '__main__':
+    from clize import run
+    run(load_cases)
