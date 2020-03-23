@@ -29,6 +29,7 @@ __version__ = "2020.03.22"
 
 import os
 from datetime import datetime
+import logging
 
 import numpy as np
 
@@ -92,6 +93,9 @@ STATUS = {
     'Muertos': 'D'}
 
 
+logger = logging.getLogger("arcovid19")
+
+
 # =============================================================================
 # FUNCTIONS_
 # =============================================================================
@@ -151,7 +155,7 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
     df_infar = from_cache(
         fname="load_cases",
         on_not_found=lambda: pd.read_excel(url, sheet_name=0, nrows=96),
-        url=TABLA_URL, orientation='wide', out=None)
+        url=TABLA_URL, orientation=orientation)
 
     # load table and replace Nan by zeros
     df_infar = df_infar.fillna(0)
@@ -161,11 +165,10 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
 
     for irow, arow in df_infar.iterrows():
         pst = arow['Pcia_status'].split()
-
         stat = STATUS.get(pst[-1])
 
         if stat is None:
-            print(stat, pst[-1], 'stopped 0')
+            logger.info(f"{stat}, {pst[-1]}, stopped 0")
             break
 
         pcia = pst[:-2]
@@ -174,35 +177,38 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
             for ap in pcia:
                 provincia += ap + ' '
             provincia = provincia.strip()
+
         else:
             provincia = pcia[0].strip()
 
         provincia_code = PROVINCIAS.get(provincia)
+
         df_infar.loc[irow, 'cod_provincia'] = provincia_code
         df_infar.loc[irow, 'cod_status'] = stat
-        df_infar.loc[irow, 'provincia_status'] = f"{provincia_code}_{stat}"
+        df_infar.loc[irow, 'provincia_status'] = provincia_code+'_'+stat
 
-    index = pd.MultiIndex.from_frame(
-        df_infar[['cod_provincia', 'cod_status']])
-
+    # reindex table with multi-index
+    index = pd.MultiIndex.from_frame(df_infar[['cod_provincia', 'cod_status']])
     df_infar.index = index
 
+    # drop duplicate columns
     df_infar.drop(columns=['cod_status', 'cod_provincia'], inplace=True)
-
     cols = list(df_infar.columns)
+    df_infar = df_infar[[cols[-1]]+cols[:-1]]
 
-    df_infar = df_infar[[cols[-1]] + cols[:-1]]
-
+    # calculate the total number per categorie per state, and the global
     for astatus in np.unique(df_infar.index.get_level_values(1)):
         filter_confirmados = df_infar.index.get_level_values(
             'cod_status').isin([astatus])
         sums = df_infar[filter_confirmados].sum(axis=0)
         dates = [adate for adate in sums.index if isinstance(adate, datetime)]
-        sums = sums[dates].astype(int)
+        df_infar.loc[('ARG', astatus), dates] = sums[dates].astype(int)
 
-        for date, suma in sums.iteritems():
-            df_infar.loc[('ARG', astatus), date] = suma
-        df_infar.loc[('ARG', astatus), 'provincia_status'] = f'ARG_{astatus}'
+        df_infar.loc[('ARG', astatus), 'provincia_status'] = f"ARG_{astatus}"
+
+    n_c = df_infar.loc[('ARG', 'C'), dates].values
+    growth_rate_C = (n_c[1:]/n_c[:-1])-1
+    df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
     if orientation == 'long':
         df_infar = df_infar.transpose()
