@@ -185,7 +185,7 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
 
         df_infar.loc[irow, 'cod_provincia'] = provincia_code
         df_infar.loc[irow, 'cod_status'] = stat
-        df_infar.loc[irow, 'provincia_status'] = provincia_code+'_'+stat
+        df_infar.loc[irow, 'provincia_status'] = f"{provincia_code}_{stat}"
 
     # reindex table with multi-index
     index = pd.MultiIndex.from_frame(df_infar[['cod_provincia', 'cod_status']])
@@ -194,7 +194,7 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
     # drop duplicate columns
     df_infar.drop(columns=['cod_status', 'cod_provincia'], inplace=True)
     cols = list(df_infar.columns)
-    df_infar = df_infar[[cols[-1]]+cols[:-1]]
+    df_infar = df_infar[[cols[-1]] + cols[:-1]]
 
     # calculate the total number per categorie per state, and the global
     for astatus in np.unique(df_infar.index.get_level_values(1)):
@@ -207,7 +207,7 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
         df_infar.loc[('ARG', astatus), 'provincia_status'] = f"ARG_{astatus}"
 
     n_c = df_infar.loc[('ARG', 'C'), dates].values
-    growth_rate_C = (n_c[1:]/n_c[:-1])-1
+    growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
     if orientation == 'long':
