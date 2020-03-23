@@ -1,5 +1,10 @@
 # ivco19 Libraries repo
 
+[![Build Status](https://travis-ci.org/ivco19/libs.svg?branch=master)](https://travis-ci.org/ivco19/libs)
+[![Python 3](https://pyup.io/repos/github/ivco19/libs/python-3-shield.svg)](https://pyup.io/repos/github/ivco19/libs/)
+[![BSD-3](https://img.shields.io/badge/License-BSD3-blue.svg)](https://tldrlegal.com/license/bsd-3-clause-license-(revised))
+
+
 This libraries contains the utilities to access different databases
 of COVID-19 data from the IATE task force.
 
