@@ -1,1 +1,71 @@
 # ivco19 Libraries repo
+
+This libraries contains the utilities to access different databases
+of COVID-19 data from the IATE task force.
+
+## Authors
+
+- Dr. Juan B Cabral (CIFASIS-UNR, IATE-OAC-UNC).
+- Sr. Mauricio Koraj (Liricus SRL.).
+- Lic. Vanessa Daza (IATE-OAC-UNC, FaMAF-UNC).
+- Dr. Mariano Dominguez (IATE-OAC-UNC, FaMAF-UNC).
+- Dr. Marcelo Lares (IATE-OAC-UNC, FaMAF-UNC).
+- Mgt. Nadia Luczywo (LIMI-FCEFyN-UNC, IED-FCE-UNC, FCA-IUA-UNDEF)
+- Dr. Dante Paz (IATE-OAC-UNC, FaMAF-UNC).
+- Dr. Rodrigo Quiroga (INFIQC-CFQ, FCQ-UNC).
+- Dr. Martín de los Ríos (ICTP-SAIFR).
+- Dr. Bruno Sanchez (Department of Physics, Duke University).
+- Dr. Federico Stasyszyn (IATE-OAC, FaMAF-UNC).
+
+## Functionalities
+
+### `def load_cases(*, url=TABLA_URL, orientation='wide', out=None)`
+
+Utility function to parse all the actual cases of the COVID-19 in
+Argentina.
+
+
+#### Parameters
+
+url: str
+    The url for the excel table to parse. Default is ivco19 team table
+
+orientation: str, 'wide' or 'long'
+    The format of the table. If wide, dates are going to be columns.
+    If in turn, long, dates are going to be rows, regions are going to
+    be columns. Under the hood is callin df.transpose() method from Pandas.
+
+out: str, path to store the dataset or None.
+    The dataset was stored as csv file. If its None the dataset was not
+    stored.
+
+
+#### Returns
+
+df_infar: Pandas.DataFrame object
+
+    A table parsing the Excel file spreadsheet 0 (called BD).
+    It features a pandas multi index, with the following hierarchy:
+        level 0: cod_provincia - Argentina states
+        level 1: cod_status - Four states of disease patients (R, C, A, D)
+
+### Notes
+
+All by default all the values are cached for 1hr. Tho change the time
+set the variable `arcovid19.CACHE_EXPIRE` to your desired time in seconds.
+
+To clear all the cache run `arcovid19.CACHE.clear()`
+
+
+**Afiliations:**
+
+- [Centro Franco Argentino de Ciencias de la Información y de Sistemas (CIFASIS-UNR)](https://www.cifasis-conicet.gov.ar/)
+- [Instituto de Astronomía Téorico y Experimental (IATE-OAC-UNC)](http://iate.oac.uncor.edu/)
+- [Facultad de Matemática Física y Computación (FaMAF-UNC)](https://www.famaf.unc.edu.ar/)
+- [Laboratorio de Ingeniería y Mantenimiento Industrial (LIMI-FCEFyN-UNC)](https://fcefyn.unc.edu.ar/facultad/secretarias/investigacion-y-posgrado/-investigacion/laboratorio-de-ingenieria-y-mantenimiento-industrial/)
+- [Instituto De Estadística Y Demografía - Facultad de Ciencias Económicas (IED-FCE-UNC)](http://www.eco.unc.edu.ar/instituto-de-estadistica-y-demografia)
+- [Department of Physics, Duke University](https://phy.duke.edu/)
+- [Facultad de Ciencias de la Administación (FCA-IUA-UNDEF)](https://www.iua.edu.ar/)
+- [Instituto de Investigaciones en Físico-Química de Córdoba (INFIQC-CONICET)](http://infiqc-fcq.psi.unc.edu.ar/)
+- [Liricus SRL](http://www.liricus.com.ar/)
+- [ICTP South American Institute for Fundamental Research (ICTP-SAIFR)](ICTP-SAIFR)
