@@ -56,5 +56,5 @@ class TableStats(object):
     def tot_casos_confirmados(self):
         """Returns latest value of total confirmed cases"""
         dates = [adate for adate in self.df.columns if isinstance(adate, datetime)]
-        return self.df[('ARG', 'C'), dates[-1]] 
+        return self.df.loc[('ARG', 'C'), dates[-1]] 
 
