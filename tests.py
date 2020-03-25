@@ -25,6 +25,8 @@
 import os
 import pathlib
 
+import pytest
+
 import arcovid19
 
 
@@ -64,11 +66,26 @@ def test_delegation():
 
 def test_dates():
     df = arcovid19.load_cases(url=LOCAL_CASES)
-
-    assert isinstance(df.dates, list)
+    assert isinstance(df.dates, tuple)
 
 
 def test_totcases():
     df = arcovid19.load_cases(url=LOCAL_CASES)
-
     assert isinstance(df.tot_cases, float)
+
+
+def test_r0():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    assert isinstance(df.r0(), float)
+
+
+def test_r0_provincias():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    for name, code in arcovid19.PROVINCIAS.values():
+        assert df.r0(provincia=name) == df.r0(provincia=code)
+
+
+def test_r0_provincia_invalida():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    with pytest.raises(ValueError):
+        df.r0(provincia="colorado")

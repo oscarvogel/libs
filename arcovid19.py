@@ -145,8 +145,6 @@ class CasesFrame:
 
     df = attr.ib()
     cplot = attr.ib(init=False)
-    dates = attr.ib(init=False)
-    tot_cases = attr.ib(init=False)
 
     @cplot.default
     def _plot_default(self):
@@ -162,19 +160,63 @@ class CasesFrame:
         """Redirect all te missing calls to the internal datadrame."""
         return getattr(self.df, a)
 
-    @dates.default
-    def _dates_default(self):
+    @property
+    def dates(self):
         """Returns the dates for which we have data.
-        Useful to use as time column (row) list for wide (long) format.
-        """
-        return [adate for adate in self.df.columns
-                if isinstance(adate, datetime)]
 
-    @tot_cases.default
-    def _tot_cases_default(self):
-        """Returns latest value of total confirmed cases
+        Useful to use as time column (row) list for wide (long) format.
+
         """
+        return tuple(
+            adate for adate in self.df.columns if isinstance(adate, datetime))
+
+    @property
+    def tot_cases(self):
+        """Returns latest value of total confirmed cases
+
+        """
+
         return self.df.loc[('ARG', 'C'), self.dates[-1]]
+
+    def r0(self, provincia=None):
+        """Calcula el R0 del pais o la provincia si se le provee un nombre.
+
+        """
+
+        # todo el pais si provincia es None
+        if provincia is None:
+            dfrA = self.df[self.df.dates].copy()
+            dfrA.drop(
+                columns=['provincia_status', 'Pcia_status'], inplace=True)
+            df1A = dfrA.reindex([('ARG', 'growth_rate_C')])
+            IA_n = df1A.iloc[:, -1]
+            IA_n_1 = df1A.iloc[:, -2]
+            R0A = IA_n / IA_n_1
+            return(R0A)
+
+        # solo de una provincia si se la pasamos
+        if provincia not in PROVINCIAS.values():
+            # si aca pasaron el nombre de la provincia esto lo cambia
+            # por el código
+            provincia = PROVINCIAS.get(provincia)
+        if provincia is None:
+            # si llegamos aca es por que lo que nos pasaron no es ni
+            # un nombre ni un código
+            raise ValueError(f"Provincia '{provincia}' no es reconocida")
+
+        dfr = self.df.copy()
+        dfr.drop(columns=['provincia_status', 'Pcia_status'], inplace=True)
+        dfr = dfr.reset_index(level=['cod_provincia'])
+
+        df1 = dfr.loc['C']
+        df1.reset_index(level=['cod_status'])
+        df1 = df1.set_index('cod_provincia')
+
+        I_n = df1.iloc[:-2, -1]
+        I_n_1 = df1.iloc[:-2, -2]
+        R0 = I_n / I_n_1
+
+        return(R0)
 
 
 def load_cases(*, url=CASES_URL, out=None):
@@ -265,36 +307,6 @@ def load_cases(*, url=CASES_URL, out=None):
         df_infar.to_csv(out)
 
     return CasesFrame(df=df_infar)
-    
-#dafre = ac.load_cases(url=, orientation='wide', out=None)
-
-#
-#def r0_provincia(self):
-#    for 
-#    #dfr = dafre[dafre.dates].copy() --> se van las lineas 1 y 2
-#    dfr = dafre.copy()  #1
-#    dfr.drop(columns=['provincia_status', 'Pcia_status'], inplace=True)  # 2
-#    dfr = dfr.reset_index(level=['cod_provincia'])
-#    df1 = dfr.loc['C']
-#    df1.reset_index(level=['cod_status'])
-#    df1 = df1.set_index('cod_provincia')
-#    I_n = df1.iloc[:-2,-1]
-#    I_n_1 = df1.iloc[:-2,-2]
-#    R0 = I_n/I_n_1
-#    return(R0)
-#
-#
-#def r0_arg(dafre):
-#    #dfr = dafre[dafre.dates].copy() --> se van las lineas 1 y 2
-#    dfrA = dafre.copy()  #1
-#    dfrA.drop(columns=['provincia_status', 'Pcia_status'], inplace=True) # 2
-#    df1A = dfrA.reindex([( 'ARG', 'growth_rate_C')])
-#    IA_n = df1A.iloc[:,-1]
-#    IA_n_1 = df1A.iloc[:,-2]
-#    R0A = IA_n/IA_n_1
-#    return(R0A)
-#
-#
 
 
 # =============================================================================
