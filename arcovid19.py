@@ -139,12 +139,14 @@ class CasesPlot:
 class CasesFrame:
     """Wrapper around the `load_cases()` table.
 
-    This class add a lot of functionalities around the dataframe.
+    This class adds functionalities around the dataframe.
 
     """
 
     df = attr.ib()
     cplot = attr.ib(init=False)
+    dates = attr.ib(init=False)
+    tot_cases = attr.ib(init=False)
 
     @cplot.default
     def _plot_default(self):
@@ -157,15 +159,22 @@ class CasesFrame:
         return repr(self.df)
 
     def __getattr__(self, a):
-        """Redirect all te missing calss to the internal datadrame."""
+        """Redirect all te missing calls to the internal datadrame."""
         return getattr(self.df, a)
 
-    @property
-    def tot_confirmed_cases(self):
-        """Returns latest value of total confirmed cases"""
-        dates = [
-            adate for adate in self.df.columns if isinstance(adate, datetime)]
-        return self.df.loc[('ARG', 'C'), dates[-1]]
+    @dates.default
+    def _dates_default(self):
+        """Returns the dates for which we have data.
+        Useful to use as time column (row) list for wide (long) format.
+        """
+        return [adate for adate in self.df.columns
+                if isinstance(adate, datetime)]
+
+    @tot_cases.default
+    def _tot_cases_default(self):
+        """Returns latest value of total confirmed cases
+        """
+        return self.df.loc[('ARG', 'C'), self.dates[-1]]
 
 
 def load_cases(*, url=CASES_URL, out=None):

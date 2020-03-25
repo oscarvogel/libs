@@ -60,3 +60,15 @@ def test_delegation():
 
     assert repr(df) == repr(df.df)
     assert df.transpose == df.df.transpose
+
+
+def test_dates():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    assert isinstance(df.dates, list)
+
+
+def test_totcases():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    assert isinstance(df.tot_cases, float)
