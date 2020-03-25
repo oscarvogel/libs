@@ -20,7 +20,7 @@
 
 __all__ = ["load_cases"]
 
-__version__ = "2020.03.22"
+__version__ = "2020.03.24"
 
 
 # =============================================================================
@@ -34,6 +34,8 @@ import logging
 import numpy as np
 
 import pandas as pd
+
+import attr
 
 import diskcache as dcache
 
@@ -54,7 +56,7 @@ CACHE = dcache.Cache(directory=DEFAULT_CACHE_DIR, disk_min_file_size=0)
 CACHE_EXPIRE = 60 * 60  # ONE HOUR
 
 
-TABLA_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub?output=xls"  # noqa
+CASES_URL = "https://github.com/ivco19/libs/raw/master/databases/cases.xlsx"
 
 
 PROVINCIAS = {
@@ -120,7 +122,53 @@ def from_cache(fname, on_not_found, **kwargs):
     return value
 
 
-def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
+# =============================================================================
+# CASES
+# =============================================================================
+
+@attr.s(frozen=True, repr=False)
+class CasesPlot:
+
+    cstats = attr.ib()
+
+    def __repr__(self):
+        return f"CasesPlot({hex(id(self.cstats))})"
+
+
+@attr.s(frozen=True, repr=False)
+class CasesFrame:
+    """Wrapper around the `load_cases()` table.
+
+    This class add a lot of functionalities around the dataframe.
+
+    """
+
+    df = attr.ib()
+    cplot = attr.ib(init=False)
+
+    @cplot.default
+    def _plot_default(self):
+        return CasesPlot(cstats=self)
+
+    def __dir__(self):
+        return super().__dir__() + dir(self.df)
+
+    def __repr__(self):
+        return repr(self.df)
+
+    def __getattr__(self, a):
+        """Redirect all te missing calss to the internal datadrame."""
+        return getattr(self.df, a)
+
+    @property
+    def tot_confirmed_cases(self):
+        """Returns latest value of total confirmed cases"""
+        dates = [
+            adate for adate in self.df.columns if isinstance(adate, datetime)]
+        return self.df.loc[('ARG', 'C'), dates[-1]]
+
+
+def load_cases(*, url=CASES_URL, out=None):
     """Utility function to parse all the actual cases of the COVID-19 in
     Argentina.
 
@@ -130,11 +178,6 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
 
     url: str
         The url for the excel table to parse. Default is ivco19 team table
-
-    orientation: str, 'wide' or 'long'
-        The format of the table. If wide, dates are going to be columns.
-        If in turn, long, dates are going to be rows, regions are going to
-        be columns. Under the hood is callin df.transpose() method from Pandas.
 
     out: str, path to store the dataset or None.
         The dataset was stored as csv file. If its None the dataset was not
@@ -155,7 +198,7 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
     df_infar = from_cache(
         fname="load_cases",
         on_not_found=lambda: pd.read_excel(url, sheet_name=0, nrows=96),
-        url=TABLA_URL, orientation=orientation)
+        url=url)
 
     # load table and replace Nan by zeros
     df_infar = df_infar.fillna(0)
@@ -209,14 +252,10 @@ def load_cases(*, url=TABLA_URL, orientation='wide', out=None):
     growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
-    if orientation == 'long':
-        df_infar = df_infar.transpose()
-    elif orientation != 'wide':
-        raise ValueError("'orientation must be 'wide' or 'long'")
-
     if out is not None:
         df_infar.to_csv(out)
-    return df_infar
+
+    return CasesFrame(df=df_infar)
 
 
 # =============================================================================

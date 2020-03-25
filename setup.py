@@ -37,7 +37,7 @@ from setuptools import setup, find_packages  # noqa
 
 PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
-REQUIREMENTS = ["numpy", "pandas", "clize", "diskcache", "xlrd"]
+REQUIREMENTS = ["numpy", "pandas", "clize", "diskcache", "xlrd", "attrs"]
 
 
 with open(PATH / "README.md") as fp:

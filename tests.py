@@ -22,22 +22,41 @@
 # IMPORTS
 # =============================================================================
 
-import pandas as pd
-
-import pytest
+import os
+import pathlib
 
 import arcovid19
+
+
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
+
+LOCAL_CASES = PATH / "databases" / "cases.xlsx"
 
 
 # =============================================================================
 # TESTS
 # =============================================================================
 
+def setup_function(func):
+    arcovid19.CACHE.clear()
 
-def test_load_cases():
 
-    assert isinstance(arcovid19.load_cases(), pd.DataFrame)
-    assert isinstance(arcovid19.load_cases(orientation="wide"), pd.DataFrame)
+def test_load_cases_local():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    assert isinstance(df, arcovid19.CasesFrame)
 
-    with pytest.raises(ValueError):
-        arcovid19.load_cases(orientation="foo")
+
+def test_load_cases_remote():
+    df = arcovid19.load_cases()
+    assert isinstance(df, arcovid19.CasesFrame)
+
+
+def test_delegation():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    assert repr(df) == repr(df.df)
+    assert df.transpose == df.df.transpose
