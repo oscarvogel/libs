@@ -256,6 +256,34 @@ def load_cases(*, url=CASES_URL, out=None):
         df_infar.to_csv(out)
 
     return CasesFrame(df=df_infar)
+    
+    #dafre = ac.load_cases(url=, orientation='wide', out=None)
+
+    def r0_provincia(dafre):
+        #dfr = dafre[dafre.dates].copy() --> se van las lineas 1 y 2
+        dfr = dafre.copy()  #1
+        dfr.drop(columns=['provincia_status', 'Pcia_status'], inplace=True)  # 2
+        dfr = dfr.reset_index(level=['cod_provincia'])
+        df1 = dfr.loc['C']
+        df1.reset_index(level=['cod_status'])
+        df1 = df1.set_index('cod_provincia')
+        I_n = df1.iloc[:-2,-1]
+        I_n_1 = df1.iloc[:-2,-2]
+        R0 = I_n/I_n_1
+        return(R0)
+
+
+    def r0_arg(dafre):
+        #dfr = dafre[dafre.dates].copy() --> se van las lineas 1 y 2
+        dfrA = dafre.copy()  #1
+        dfrA.drop(columns=['provincia_status', 'Pcia_status'], inplace=True) # 2
+        df1A = dfrA.reindex([( 'ARG', 'growth_rate_C')])
+        IA_n = df1A.iloc[:,-1]
+        IA_n_1 = df1A.iloc[:,-2]
+        R0A = IA_n/IA_n_1
+        return(R0A)
+
+
 
 
 # =============================================================================
