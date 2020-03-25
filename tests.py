@@ -81,7 +81,7 @@ def test_r0():
 
 def test_r0_provincias():
     df = arcovid19.load_cases(url=LOCAL_CASES)
-    for name, code in arcovid19.PROVINCIAS.values():
+    for name, code in arcovid19.PROVINCIAS.items():
         assert df.r0(provincia=name) == df.r0(provincia=code)
 
 
