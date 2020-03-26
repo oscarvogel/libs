@@ -179,19 +179,20 @@ class CasesFrame:
         return self.df.loc[('ARG', 'C'), self.dates[-1]]
 
     def r0(self, provincia=None):
-        """Calcula el R0 del pais o la provincia si se le provee un nombre.
+        """Calcula el R0 del pais o el R0 de la provincia si se le provee un nombre.
 
         """
 
-        # todo el pais si provincia es None
+        # R0 de Arg sí es None
         if provincia is None:
             dfrA = self.df[self.df.dates].copy()
-            dfrA.drop(
-                columns=['provincia_status', 'Pcia_status'], inplace=True)
+
             df1A = dfrA.reindex([('ARG', 'growth_rate_C')])
+
             IA_n = df1A.iloc[:, -1]
             IA_n_1 = df1A.iloc[:, -2]
             R0A = IA_n / IA_n_1
+
             return(R0A)
 
         # solo de una provincia si se la pasamos
@@ -205,7 +206,6 @@ class CasesFrame:
             raise ValueError(f"Provincia '{provincia}' no es reconocida")
 
         dfr = self.df.copy()
-        dfr.drop(columns=['provincia_status', 'Pcia_status'], inplace=True)
         dfr = dfr.reset_index(level=['cod_provincia'])
 
         df1 = dfr.loc['C']
