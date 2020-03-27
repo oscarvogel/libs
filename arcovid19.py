@@ -162,6 +162,9 @@ class CasesFrame:
         """Redirect all te missing calls to the internal datadrame."""
         return getattr(self.df, a)
 
+    def __getitem__(self, k):
+        return self.df.__getitem__(k)
+
     @property
     def dates(self):
         """Returns the dates for which we have data.
@@ -222,13 +225,13 @@ class CasesFrame:
         R0 = I_n[provincia]/I_n_1[provincia]
 
         return(R0)
-    
+
 
     def r0_date(self, yyyy, mm, dd):
         """Calcula el R0 del pais o el R0 para todas las provincias si se le provee la fecha
 
         """
-        current_time = datetime.now() 
+        current_time = datetime.now()
 
         # Si ingresa una fecha fuera de la db
         if (yyyy < 2020 or mm < 3 or dd < 4):
@@ -240,23 +243,23 @@ class CasesFrame:
             print('Información inexistente.')
             return
 
-            
+
         date = str(yyyy) + '-' + str(mm) + '-' + str(dd)
         date = datetime.strptime(date, '%Y-%m-%d')
 
         date_1 = str(date.year) + '-' + str(date.month) + '-' + str(date.day - 1)
         date_1 = datetime.strptime(date_1, '%Y-%m-%d')
 
-        ddfr = self.loc[:, self.dates].copy() 
+        ddfr = self.loc[:, self.dates].copy()
         ddfr = ddfr.reset_index(level=['cod_provincia'])
-    
+
         ddf1 = ddfr.loc['C'].reset_index(level=['cod_status']).drop(columns=['cod_status']).set_index('cod_provincia').transpose()
-        ddf1.index = pd.to_datetime(ddf1.index, format='%Y%m%d', errors='ignore')    
-    
+        ddf1.index = pd.to_datetime(ddf1.index, format='%Y%m%d', errors='ignore')
+
         Id_n = ddf1.loc[date]
         Id_n_1 = ddf1.loc[date_1]
         R0d = Id_n/Id_n_1
-    
+
         return(R0d)
 
 

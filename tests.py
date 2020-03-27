@@ -27,6 +27,8 @@ import pathlib
 
 import pytest
 
+import numpy as np
+
 import arcovid19
 
 
@@ -89,3 +91,10 @@ def test_r0_provincia_invalida():
     df = arcovid19.load_cases(url=LOCAL_CASES)
     with pytest.raises(ValueError):
         df.r0(provincia="colorado")
+
+
+def test_get_item():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    value = df[df.provincia_status == f"CBA_C"]
+    expected = df.df[df.provincia_status == f"CBA_C"]
+    assert np.all(value == expected)
