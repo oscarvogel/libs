@@ -151,14 +151,24 @@ class CasesFrame:
         return CasesPlot(cstats=self)
 
     def __dir__(self):
+        """x.__dir__() <==> dir(x)"""
         return super().__dir__() + dir(self.df)
 
     def __repr__(self):
+        """x.__repr__() <==> repr(x)"""
         return repr(self.df)
 
     def __getattr__(self, a):
-        """Redirect all te missing calls to the internal datadrame."""
+        """x.__getattr__(y) <==> x.y
+
+        Redirect all te missing calls to the internal datadrame.
+
+        """
         return getattr(self.df, a)
+
+    def __getitem__(self, k):
+        """x.__getitem__(y) <==> x[y]"""
+        return self.df.__getitem__(k)
 
     @property
     def dates(self):
@@ -167,26 +177,24 @@ class CasesFrame:
         Useful to use as time column (row) list for wide (long) format.
 
         """
-        return tuple(
-            adate for adate in self.df.columns if isinstance(adate, datetime))
+        return [
+            adate for adate in self.df.columns
+            if isinstance(adate, datetime)]
 
     @property
     def tot_cases(self):
-        """Returns latest value of total confirmed cases
-
-        """
-
+        """Returns latest value of total confirmed cases"""
         return self.df.loc[('ARG', 'C'), self.dates[-1]]
 
     def r0(self, provincia=None):
-        """Calcula el R0 del pais o el R0 de la provincia si se le provee un nombre.
+        """Calcula el R0 del pais o el R0 de la provincia
+        si se le provee un nombre.
 
         """
 
         # R0 de Arg sí es None
         if provincia is None:
-            dfrA = self.df[self.dates].copy()
-
+            dfrA = self.loc[:, self.dates].copy()
             df1A = dfrA.reindex([('ARG', 'growth_rate_C')])
 
             IA_n = df1A.iloc[:, -1]
@@ -205,7 +213,8 @@ class CasesFrame:
             # un nombre ni un código
             raise ValueError(f"Provincia '{provincia}' no es reconocida")
 
-        dfr = self.df.copy()
+        dfr = self.loc[:, self.dates].copy()
+
         dfr = dfr.reset_index(level=['cod_provincia'])
 
         df1 = dfr.loc['C']
@@ -214,9 +223,68 @@ class CasesFrame:
 
         I_n = df1.iloc[:-2, -1]
         I_n_1 = df1.iloc[:-2, -2]
-        R0 = I_n / I_n_1
+
+        R0 = I_n[provincia] / I_n_1[provincia]
 
         return(R0)
+
+    def r0_date(self, yyyy, mm, dd):
+        """Calcula el R0 del pais o el R0 para todas las provincias
+        si se le provee la fecha.
+
+        """
+        current_time = datetime.now()
+
+        # JUAN: la validacion esta tiene que hacerse directamente
+        # con un datetime.date object. No importen solo la clase sino que
+        # corresponde hacer
+        #   import datetime as dt
+        # , y despues pueden usar
+        #   dt.datetime, dt.date y dt.timedelta
+
+        # Si ingresa una fecha fuera de la db
+        if (yyyy < 2020 or mm < 3 or dd < 4):
+            print('La fecha no corresponde.')
+            return
+
+        # Si ingresa una fecha fuera de la db
+        if (
+            current_time.year < yyyy or
+            current_time.month < mm or
+            current_time.day < dd
+        ):
+            print('Información inexistente.')  # esto es una exception
+            return
+
+        # usen el modulo dateutils.parse.parse_date
+        #  y tengan en cuenta que alguien puede pasarle
+        # directamente un date o un datetime
+        date = str(yyyy) + '-' + str(mm) + '-' + str(dd)
+        date = datetime.strptime(date, '%Y-%m-%d')
+
+        # aca se usa un dt.timedelta
+        date_1 = str(date.year) + '-' + str(date.month) + '-' + str(date.day - 1)
+        date_1 = datetime.strptime(date_1, '%Y-%m-%d')
+
+        ddfr = self.loc[:, self.dates].copy()
+        ddfr = ddfr.reset_index(level=['cod_provincia'])
+
+        ddf1 = ddfr.loc['C'].reset_index(
+            level=['cod_status']
+        ).drop(
+            columns=['cod_status']
+        ).set_index(
+            'cod_provincia'
+        ).transpose()
+
+        ddf1.index = pd.to_datetime(ddf1.index, format='%Y%m%d', errors='ignore')
+
+        Id_n = ddf1.loc[date]
+        Id_n_1 = ddf1.loc[date_1]
+        R0d = Id_n/Id_n_1  # estos errores de estilo se solucionan con un flake 8
+
+        return(R0d)  # return no es una funcion esos parentesis sobran
+
 
 
 def load_cases(*, url=CASES_URL, out=None):
@@ -238,7 +306,7 @@ def load_cases(*, url=CASES_URL, out=None):
     Returns
     -------
 
-    df_infar: Pandas.DataFrame object
+    CasesFrame:
 
         A table parsing the Excel file spreadsheet 0 (called BD).
         It features a pandas multi index, with the following hierarchy:
