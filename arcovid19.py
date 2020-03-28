@@ -261,10 +261,6 @@ def load_cases(*, url=CASES_URL, out=None):
         pst = arow['Pcia_status'].split()
         stat = STATUS.get(pst[-1])
 
-        #if stat is None:
-        #    logger.info(f"{stat}, {pst[-1]}, stopped 0")
-        #    break
-
         pcia = pst[:-2]
         if len(pcia) > 1:
             provincia = ''
