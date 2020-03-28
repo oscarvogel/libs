@@ -185,7 +185,7 @@ class CasesFrame:
 
         # R0 de Arg sí es None
         if provincia is None:
-            dfrA = self.df[self.df.dates].copy()
+            dfrA = self.df[self.dates].copy()
 
             df1A = dfrA.reindex([('ARG', 'growth_rate_C')])
 
