@@ -30,6 +30,8 @@ import pytest
 import numpy as np
 import pandas as pd
 
+from matplotlib.testing.decorators import check_figures_equal
+
 import arcovid19
 
 
@@ -119,3 +121,46 @@ def test_get_item():
     value = df[df.provincia_status == f"CBA_C"]
     expected = df.df[df.provincia_status == f"CBA_C"]
     assert np.all(value == expected)
+
+
+# =============================================================================
+# PLOTS
+# =============================================================================
+
+@check_figures_equal()
+def test_plot_call(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot(ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.grate_full_period_all(ax=exp_ax)
+
+
+@check_figures_equal()
+def test_plot_grate_full_period_all(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot("grate_full_period_all", ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.grate_full_period_all(ax=exp_ax)
+
+
+@check_figures_equal()
+def test_plot_grate_full_period(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot("grate_full_period", ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.grate_full_period(ax=exp_ax)

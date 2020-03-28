@@ -36,6 +36,8 @@ import numpy as np
 
 import pandas as pd
 
+import matplotlib.pyplot as plt
+
 import attr
 
 import diskcache as dcache
@@ -123,6 +125,14 @@ def from_cache(fname, on_not_found, **kwargs):
     return value
 
 
+def safe_log(array):
+    """Convert all -inf to 0"""
+    with np.errstate(divide='ignore'):
+        res = np.log(array.astype(float))
+    res[np.isneginf(res)] = 0
+    return res
+
+
 # =============================================================================
 # CASES
 # =============================================================================
@@ -135,6 +145,96 @@ class CasesPlot:
     def __repr__(self):
         return f"CasesPlot({hex(id(self.cstats))})"
 
+    def __call__(self, plot_name=None, ax=None, **kwargs):
+        """x.__call__() == x()"""
+        plot_name = plot_name or ""
+        plot = getattr(self, plot_name, self.grate_full_period_all)
+        ax = plot(ax=ax, **kwargs)
+        return ax
+
+    def grate_full_period_all(
+        self, ax=None, argentina=True,
+        exclude=None, **kwargs
+    ):
+        kwargs.setdefault("confirmed", True)
+        kwargs.setdefault("active", False)
+        kwargs.setdefault("recovered", False)
+        kwargs.setdefault("deceased", False)
+
+        if argentina:
+            ax = self.grate_full_period(provincia=None, ax=ax, **kwargs)
+
+        exclude = [] if exclude is None else exclude
+        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
+
+        for code in sorted(PROVINCIAS.values()):
+            if code in exclude:
+                continue
+            ax = self.grate_full_period(provincia=code, ax=ax, **kwargs)
+
+        labels = [d.date() for d in self.cstats.dates]
+
+        ax.set_title(
+            "COVID-19 Grow in Argentina by Province\n"
+            f"{labels[0]} - {labels[-1]}")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(labels=labels, rotation=45)
+
+        return ax
+
+    def grate_full_period(
+        self, provincia=None, confirmed=True,
+        active=True, recovered=True, deceased=True,
+        ax=None, log=False, **kwargs
+    ):
+        ax = plt.gca() if ax is None else ax
+
+        if provincia is None:
+            prov_name, prov_c = "Argentina", "ARG"
+        else:
+            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+
+        if confirmed:
+            pkwargs = kwargs.get("confirmed_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Confirmed")
+            cseries = self.cstats.loc[(prov_c, 'C')][self.cstats.dates].values
+            cseries = safe_log(cseries) if log else cseries
+            ax.plot(cseries, **pkwargs)
+        if active:
+            pkwargs = kwargs.get("active_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Active")
+            cseries = self.cstats.loc[(prov_c, 'A')][self.cstats.dates].values
+            cseries = safe_log(cseries) if log else cseries
+            ax.plot(cseries, **pkwargs)
+        if recovered:
+            pkwargs = kwargs.get("recovered_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Recovered")
+            cseries = self.cstats.loc[(prov_c, 'R')][self.cstats.dates].values
+            cseries = safe_log(cseries) if log else cseries
+            ax.plot(cseries, **pkwargs)
+        if deceased:
+            pkwargs = kwargs.get("deceased_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Deceased")
+            cseries = self.cstats.loc[(prov_c, 'R')][self.cstats.dates].values
+            cseries = safe_log(cseries) if log else cseries
+            ax.plot(cseries, **pkwargs)
+
+        labels = [d.date() for d in self.cstats.dates]
+
+        ax.set_title(
+            f"COVID-19 Grow in {prov_name}\n"
+            f"{labels[0]} - {labels[-1]}")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(labels=labels, rotation=45)
+
+        ax.legend()
+
+        return ax
+
 
 @attr.s(frozen=True, repr=False)
 class CasesFrame:
@@ -145,9 +245,9 @@ class CasesFrame:
     """
 
     df = attr.ib()
-    cplot = attr.ib(init=False)
+    plot = attr.ib(init=False)
 
-    @cplot.default
+    @plot.default
     def _plot_default(self):
         return CasesPlot(cstats=self)
 
@@ -187,6 +287,27 @@ class CasesFrame:
         """Returns latest value of total confirmed cases"""
         return self.df.loc[('ARG', 'C'), self.dates[-1]]
 
+    def get_provincia_name(self, provincia):
+        """Resolve and validate the name of a given provincia name or code."""
+        if provincia in PROVINCIAS.keys():
+            return provincia
+        provincia_lowercase = provincia.lower()
+        for name, code in PROVINCIAS.items():
+            if name.lower() == provincia_lowercase:
+                return PROVINCIAS.get(provincia)
+        raise ValueError(f"Unknow provincia'{provincia}'")
+
+    def get_provincia_name_code(self, provincia):
+        """Resolve and validate the name and code of a given provincia
+        name or code.
+
+        """
+        prov_lc = provincia.lower()
+        for name, code in PROVINCIAS.items():
+            if name.lower() == prov_lc or code.lower() == prov_lc:
+                return name, code
+        raise ValueError(f"Unknow provincia'{provincia}'")
+
     def last_growth_rate(self, provincia=None):
         """Returns the last available growth rate for the whole country
         if provincia is None, or for only the named region.
@@ -196,18 +317,14 @@ class CasesFrame:
 
     def grate_full_period(self, provincia=None):
         """Estimates growth rate for the period where we have data
+
         """
         # R0 de Arg sí es None
         if provincia is None:
             idx_region = ('ARG', 'growth_rate_C')
             return(self.df.loc[idx_region, self.dates[1:]])
 
-        if provincia not in PROVINCIAS.values():
-            pcia_code = PROVINCIAS.get(provincia)
-            if pcia_code is None:
-                raise ValueError(f"Provincia '{provincia}' no es reconocida")
-        else:
-            pcia_code = provincia
+        pcia_code = self.get_provincia_name_code(provincia)[1]
 
         idx_region = (pcia_code, 'C')
 
