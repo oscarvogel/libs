@@ -28,6 +28,7 @@ import pathlib
 import pytest
 
 import numpy as np
+import pandas as pd
 
 import arcovid19
 
@@ -76,23 +77,41 @@ def test_totcases():
     assert isinstance(df.tot_cases, float)
 
 
-@pytest.mark.xfail
-def test_r0():
+def test_last_grate():
     df = arcovid19.load_cases(url=LOCAL_CASES)
-    assert isinstance(df.r0(), float)
+    assert isinstance(df.last_growth_rate(), float)
 
 
-@pytest.mark.xfail
-def test_r0_provincias():
+def test_full_grate():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    assert isinstance(df.grate_full_period(), pd.Series)
+
+
+def test_full_grate_provincias():
     df = arcovid19.load_cases(url=LOCAL_CASES)
     for name, code in arcovid19.PROVINCIAS.items():
-        assert df.r0(provincia=name) == df.r0(provincia=code)
+        wname = df.grate_full_period(provincia=name)
+        wcode = df.grate_full_period(provincia=code)
+        assert isinstance(wname, pd.Series)
+        assert isinstance(wcode, pd.Series)
 
 
-def test_r0_provincia_invalida():
+def test_grate_provincias():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    for name, code in arcovid19.PROVINCIAS.items():
+        wname = df.last_growth_rate(provincia=name)
+        wcode = df.last_growth_rate(provincia=code)
+
+        if np.isnan(wname):
+            assert np.isnan(wcode)
+        else:
+            assert wname == wcode
+
+
+def test_grate_provincia_invalida():
     df = arcovid19.load_cases(url=LOCAL_CASES)
     with pytest.raises(ValueError):
-        df.r0(provincia="colorado")
+        df.last_growth_rate(provincia="colorado")
 
 
 def test_get_item():

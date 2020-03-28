@@ -28,7 +28,8 @@ __version__ = "2020.03.24"
 # =============================================================================
 
 import os
-from datetime import datetime
+import datetime as dt
+
 import logging
 
 import numpy as np
@@ -179,112 +180,44 @@ class CasesFrame:
         """
         return [
             adate for adate in self.df.columns
-            if isinstance(adate, datetime)]
+            if isinstance(adate, dt.datetime)]
 
     @property
     def tot_cases(self):
         """Returns latest value of total confirmed cases"""
         return self.df.loc[('ARG', 'C'), self.dates[-1]]
 
-    def r0(self, provincia=None):
-        """Calcula el R0 del pais o el R0 de la provincia
-        si se le provee un nombre.
+    def last_growth_rate(self, provincia=None):
+        """Returns the last available growth rate for the whole country
+        if provincia is None, or for only the named region.
 
         """
+        return self.grate_full_period(provincia=provincia)[self.dates[-1]]
 
+    def grate_full_period(self, provincia=None):
+        """Estimates growth rate for the period where we have data
+        """
         # R0 de Arg sí es None
         if provincia is None:
-            dfrA = self.loc[:, self.dates].copy()
-            df1A = dfrA.reindex([('ARG', 'growth_rate_C')])
+            idx_region = ('ARG', 'growth_rate_C')
+            return(self.df.loc[idx_region, self.dates[1:]])
 
-            IA_n = df1A.iloc[:, -1]
-            IA_n_1 = df1A.iloc[:, -2]
-            R0A = IA_n / IA_n_1
-
-            return(R0A)
-
-        # solo de una provincia si se la pasamos
         if provincia not in PROVINCIAS.values():
-            # si aca pasaron el nombre de la provincia esto lo cambia
-            # por el código
-            provincia = PROVINCIAS.get(provincia)
-        if provincia is None:
-            # si llegamos aca es por que lo que nos pasaron no es ni
-            # un nombre ni un código
-            raise ValueError(f"Provincia '{provincia}' no es reconocida")
+            pcia_code = PROVINCIAS.get(provincia)
+            if pcia_code is None:
+                raise ValueError(f"Provincia '{provincia}' no es reconocida")
+        else:
+            pcia_code = provincia
 
-        dfr = self.loc[:, self.dates].copy()
+        idx_region = (pcia_code, 'C')
 
-        dfr = dfr.reset_index(level=['cod_provincia'])
+        I_n = self.df.loc[idx_region, self.dates[1:]].values.astype(float)
+        I_n_1 = self.df.loc[idx_region, self.dates[:-1]].values.astype(float)
 
-        df1 = dfr.loc['C']
-        df1.reset_index(level=['cod_status'])
-        df1 = df1.set_index('cod_provincia')
+        growth_rate = np.array((I_n / I_n_1) - 1)
+        growth_rate[np.where(np.isinf(growth_rate))] = np.nan
 
-        I_n = df1.iloc[:-2, -1]
-        I_n_1 = df1.iloc[:-2, -2]
-
-        R0 = I_n[provincia] / I_n_1[provincia]
-
-        return(R0)
-
-    def r0_date(self, yyyy, mm, dd):
-        """Calcula el R0 del pais o el R0 para todas las provincias
-        si se le provee la fecha.
-
-        """
-        current_time = datetime.now()
-
-        # JUAN: la validacion esta tiene que hacerse directamente
-        # con un datetime.date object. No importen solo la clase sino que
-        # corresponde hacer
-        #   import datetime as dt
-        # , y despues pueden usar
-        #   dt.datetime, dt.date y dt.timedelta
-
-        # Si ingresa una fecha fuera de la db
-        if (yyyy < 2020 or mm < 3 or dd < 4):
-            print('La fecha no corresponde.')
-            return
-
-        # Si ingresa una fecha fuera de la db
-        if (
-            current_time.year < yyyy or
-            current_time.month < mm or
-            current_time.day < dd
-        ):
-            print('Información inexistente.')  # esto es una exception
-            return
-
-        # usen el modulo dateutils.parse.parse_date
-        #  y tengan en cuenta que alguien puede pasarle
-        # directamente un date o un datetime
-        date = str(yyyy) + '-' + str(mm) + '-' + str(dd)
-        date = datetime.strptime(date, '%Y-%m-%d')
-
-        # aca se usa un dt.timedelta
-        date_1 = str(date.year) + '-' + str(date.month) + '-' + str(date.day - 1)
-        date_1 = datetime.strptime(date_1, '%Y-%m-%d')
-
-        ddfr = self.loc[:, self.dates].copy()
-        ddfr = ddfr.reset_index(level=['cod_provincia'])
-
-        ddf1 = ddfr.loc['C'].reset_index(
-            level=['cod_status']
-        ).drop(
-            columns=['cod_status']
-        ).set_index(
-            'cod_provincia'
-        ).transpose()
-
-        ddf1.index = pd.to_datetime(ddf1.index, format='%Y%m%d', errors='ignore')
-
-        Id_n = ddf1.loc[date]
-        Id_n_1 = ddf1.loc[date_1]
-        R0d = Id_n/Id_n_1  # estos errores de estilo se solucionan con un flake 8
-
-        return(R0d)  # return no es una funcion esos parentesis sobran
-
+        return pd.Series(index=self.dates[1:], data=growth_rate)
 
 
 def load_cases(*, url=CASES_URL, out=None):
@@ -328,9 +261,9 @@ def load_cases(*, url=CASES_URL, out=None):
         pst = arow['Pcia_status'].split()
         stat = STATUS.get(pst[-1])
 
-        if stat is None:
-            logger.info(f"{stat}, {pst[-1]}, stopped 0")
-            break
+        #if stat is None:
+        #    logger.info(f"{stat}, {pst[-1]}, stopped 0")
+        #    break
 
         pcia = pst[:-2]
         if len(pcia) > 1:
@@ -362,7 +295,7 @@ def load_cases(*, url=CASES_URL, out=None):
         filter_confirmados = df_infar.index.get_level_values(
             'cod_status').isin([astatus])
         sums = df_infar[filter_confirmados].sum(axis=0)
-        dates = [adate for adate in sums.index if isinstance(adate, datetime)]
+        dates = [date for date in sums.index if isinstance(date, dt.datetime)]
         df_infar.loc[('ARG', astatus), dates] = sums[dates].astype(int)
 
         df_infar.loc[('ARG', astatus), 'provincia_status'] = f"ARG_{astatus}"
