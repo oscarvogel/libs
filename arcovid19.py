@@ -105,7 +105,7 @@ logger = logging.getLogger("arcovid19")
 # FUNCTIONS_
 # =============================================================================
 
-def from_cache(fname, on_not_found, **kwargs):
+def from_cache(fname, on_not_found, cached=True, **kwargs):
     """Simple cache orchestration.
 
     """
@@ -115,7 +115,10 @@ def from_cache(fname, on_not_found, **kwargs):
     with CACHE as cache:
         cache.expire()
 
-        value = cache.get(key, default=dcache.core.ENOVAL, retry=True)
+        value = (
+            cache.get(key, default=dcache.core.ENOVAL, retry=True)
+            if cached else dcache.core.ENOVAL)
+
         if value is dcache.core.ENOVAL:
             value = on_not_found()
             cache.set(
@@ -337,7 +340,7 @@ class CasesFrame:
         return pd.Series(index=self.dates[1:], data=growth_rate)
 
 
-def load_cases(*, url=CASES_URL, out=None):
+def load_cases(*, url=CASES_URL, cached=True, out=None):
     """Utility function to parse all the actual cases of the COVID-19 in
     Argentina.
 
@@ -346,7 +349,10 @@ def load_cases(*, url=CASES_URL, out=None):
     ----------
 
     url: str
-        The url for the excel table to parse. Default is ivco19 team table
+        The url for the excel table to parse. Default is ivco19 team table.
+
+    cached : bool
+        If you want to use the local cache or retrieve a new value.
 
     out: str, path to store the dataset or None.
         The dataset was stored as csv file. If its None the dataset was not
@@ -367,6 +373,7 @@ def load_cases(*, url=CASES_URL, out=None):
     df_infar = from_cache(
         fname="load_cases",
         on_not_found=lambda: pd.read_excel(url, sheet_name=0, nrows=96),
+        cached=cached,
         url=url)
 
     # load table and replace Nan by zeros
