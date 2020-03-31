@@ -290,16 +290,6 @@ class CasesFrame:
         """Returns latest value of total confirmed cases"""
         return self.df.loc[('ARG', 'C'), self.dates[-1]]
 
-    def get_provincia_name(self, provincia):
-        """Resolve and validate the name of a given provincia name or code."""
-        if provincia in PROVINCIAS.keys():
-            return provincia
-        provincia_lowercase = provincia.lower()
-        for name, code in PROVINCIAS.items():
-            if name.lower() == provincia_lowercase:
-                return PROVINCIAS.get(provincia)
-        raise ValueError(f"Unknow provincia'{provincia}'")
-
     def get_provincia_name_code(self, provincia):
         """Resolve and validate the name and code of a given provincia
         name or code.
@@ -309,7 +299,7 @@ class CasesFrame:
         for name, code in PROVINCIAS.items():
             if name.lower() == prov_lc or code.lower() == prov_lc:
                 return name, code
-        raise ValueError(f"Unknow provincia'{provincia}'")
+        raise ValueError(f"Unknown provincia'{provincia}'")
 
     def last_growth_rate(self, provincia=None):
         """Returns the last available growth rate for the whole country
