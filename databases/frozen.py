@@ -16,7 +16,6 @@ URLS = {
 UPDATES_FNAME = "updates.json"
 
 
-
 def frozen(path=PATH):
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)
@@ -36,7 +35,6 @@ def frozen(path=PATH):
             fp.write(r.content)
 
         updates[fn] = dt.datetime.utcnow().isoformat()
-
 
     with open(updates_path, "w") as fp:
         print(f"Writing {updates_path}...")
