@@ -340,7 +340,7 @@ class CasesFrame:
         return pd.Series(index=self.dates[1:], data=growth_rate)
 
 
-def load_cases(*, url=CASES_URL, cached=True, out=None):
+def load_cases(url=CASES_URL, cached=True):
     """Utility function to parse all the actual cases of the COVID-19 in
     Argentina.
 
@@ -353,11 +353,6 @@ def load_cases(*, url=CASES_URL, cached=True, out=None):
 
     cached : bool
         If you want to use the local cache or retrieve a new value.
-
-    out: str, path to store the dataset or None.
-        The dataset was stored as csv file. If its None the dataset was not
-        stored.
-
 
     Returns
     -------
@@ -424,9 +419,6 @@ def load_cases(*, url=CASES_URL, cached=True, out=None):
     growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
-    if out is not None:
-        df_infar.to_csv(out)
-
     return CasesFrame(df=df_infar)
 
 
@@ -434,6 +426,29 @@ def load_cases(*, url=CASES_URL, cached=True, out=None):
 # MAIN_
 # =============================================================================
 
-if __name__ == '__main__':
+def main():
     from clize import run
-    run(load_cases)
+
+    def _load_cases(*, url=CASES_URL, nocached=False, out=None):
+        """Retrieve and store the database as an as CSV file.
+
+        url: str
+            The url for the excel table to parse. Default is ivco19 team table.
+
+        out: PATH
+            The output path to the CSV file
+
+        nocached:
+            If you want to ignore the local cache or retrieve a new value.
+
+        """
+        cases = load_cases(url=url, cached=not nocached)
+        if out is not None:
+            cases.to_csv(out)
+        else:
+            print(cases)
+    run(_load_cases)
+
+
+if __name__ == '__main__':
+    main()

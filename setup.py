@@ -84,6 +84,8 @@ def do_setup():
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Scientific/Engineering"),
         py_modules=["arcovid19", "ez_setup"],
+        entry_points={
+            'console_scripts': ['arcovid19=arcovid19:main']},
         install_requires=REQUIREMENTS)
 
 
