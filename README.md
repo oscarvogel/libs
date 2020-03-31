@@ -74,6 +74,44 @@ set the variable `arcovid19.CACHE_EXPIRE` to your desired time in seconds.
 To clear all the cache run `arcovid19.CACHE.clear()`
 
 
+## Citation
+
+Please acknowledge arcovid19 in any research report or publication that requires citation of any author's work.
+Our suggested acknowledgment is:
+
+> The authors acknowledge the arcovid19 project that contributed to the research reported here. https://github.com/ivco19/libs/
+
+
+### ABOUT THE DATA
+
+
+Please cite:
+
+> Luczywo, N. A., Daza, V., Koraj, M., Dominguez, M., Lares, M., Paz, D. J.,
+> Quiroga, R., Rios, M. E. D. L., Sánchez, B. O., Stasyszyn, F., &
+> Cabral, J. B. (2020). Infecciones de COVID-19 en Argentina.
+> Unpublished. https://doi.org/10.13140/RG.2.2.22519.78246
+
+
+```
+    @misc{https://doi.org/10.13140/rg.2.2.22519.78246,
+        doi = {10.13140/RG.2.2.22519.78246},
+        url = {http://rgdoi.net/10.13140/RG.2.2.22519.78246},
+        author = {
+            Luczywo,  Nadia Ayelen and Daza,  Vanessa and Koraj,  Mauricio and
+            Dominguez,  Mariano and Lares,  Marcelo and Paz,  Dante Javier and
+            Quiroga,  Rodrigo and Rios,  Martín Emilio De Los and
+            Sánchez,  Bruno Orlando and Stasyszyn,  Federico and
+            Cabral,  Juan Bautista},
+        language = {es},
+        title = {Infecciones de COVID-19 en Argentina},
+        publisher = {Unpublished},
+        year = {2020}
+    }
+```
+
+
+
 **Afiliations:**
 
 - [Centro Franco Argentino de Ciencias de la Información y de Sistemas (CIFASIS-UNR)](https://www.cifasis-conicet.gov.ar/)
