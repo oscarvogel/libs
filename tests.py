@@ -123,6 +123,16 @@ def test_get_item():
     assert np.all(value == expected)
 
 
+def test_restore_time_serie():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    tsdf = df.restore_time_serie()
+    for prov in arcovid19.PROVINCIAS.values():
+        for code in arcovid19.STATUS.values():
+            orig_row = df.loc[(prov, code)][df.dates].values
+            ts = tsdf.loc[(prov, code)][df.dates].values
+            assert np.all(ts.cumsum() == orig_row)
+
+
 # =============================================================================
 # PLOTS
 # =============================================================================

@@ -301,6 +301,23 @@ class CasesFrame:
                 return name, code
         raise ValueError(f"Unknown provincia'{provincia}'")
 
+    def restore_time_serie(self):
+        """Retrieve a new pandas.DataFrame but with observations
+        by Date.
+        """
+        def _cumdiff(row):
+            shifted = np.roll(row, 1)
+            shifted[0] = 0
+            diff = row - shifted
+            return diff
+
+        idxs = ~self.df.index.isin([('ARG', 'growth_rate_C')])
+        cols = self.dates
+
+        uncum = self.df.copy()
+        uncum.loc[idxs, cols] = uncum.loc[idxs][cols].apply(_cumdiff, axis=1)
+        return uncum
+
     def last_growth_rate(self, provincia=None):
         """Returns the last available growth rate for the whole country
         if provincia is None, or for only the named region.
