@@ -164,8 +164,17 @@ class CasesPlot:
         kwargs.setdefault("recovered", False)
         kwargs.setdefault("deceased", False)
 
+        if ax is None:
+            ax = plt.gca()
+            fig = plt.gcf()
+
+            height = len(PROVINCIAS) - len(exclude) - int(argentina)
+            height = 4 if height <= 0 else (height)
+
+            fig.set_size_inches(12, height)
+
         if argentina:
-            ax = self.grate_full_period(provincia=None, ax=ax, **kwargs)
+            self.grate_full_period(provincia=None, ax=ax, **kwargs)
 
         exclude = [] if exclude is None else exclude
         exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
@@ -173,7 +182,7 @@ class CasesPlot:
         for code in sorted(PROVINCIAS.values()):
             if code in exclude:
                 continue
-            ax = self.grate_full_period(provincia=code, ax=ax, **kwargs)
+            self.grate_full_period(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
 
@@ -228,6 +237,94 @@ class CasesPlot:
 
         ax.set_title(
             f"COVID-19 Grow in {prov_name}\n"
+            f"{labels[0]} - {labels[-1]}")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(labels=labels, rotation=45)
+
+        ax.legend()
+
+        return ax
+
+    def time_serie_all(
+        self, ax=None, argentina=True,
+        exclude=None, **kwargs
+    ):
+        kwargs.setdefault("confirmed", True)
+        kwargs.setdefault("active", False)
+        kwargs.setdefault("recovered", False)
+        kwargs.setdefault("deceased", False)
+
+        if ax is None:
+            ax = plt.gca()
+            fig = plt.gcf()
+
+            height = len(PROVINCIAS) - len(exclude) - int(argentina)
+            height = 4 if height <= 0 else (height)
+
+            fig.set_size_inches(12, height)
+
+        if argentina:
+            self.time_serie(provincia=None, ax=ax, **kwargs)
+
+        exclude = [] if exclude is None else exclude
+        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
+
+        for code in sorted(PROVINCIAS.values()):
+            if code in exclude:
+                continue
+            self.grate_full_period(provincia=code, ax=ax, **kwargs)
+
+        labels = [d.date() for d in self.cstats.dates]
+
+        ax.set_title(
+            "COVID-19 cases by date in Argentina by Province\n"
+            f"{labels[0]} - {labels[-1]}")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(labels=labels, rotation=45)
+        return ax
+
+    def time_serie(
+        self, provincia=None, confirmed=True,
+        active=True, recovered=True, deceased=True,
+        ax=None, **kwargs
+    ):
+        ax = plt.gca() if ax is None else ax
+
+        if provincia is None:
+            prov_name, prov_c = "Argentina", "ARG"
+        else:
+            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+
+        ts = self.cstats.restore_time_serie()
+        if confirmed:
+            pkwargs = kwargs.get("confirmed_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Confirmed")
+            cseries = ts.loc[(prov_c, 'C')][self.cstats.dates].values
+            ax.plot(cseries, **pkwargs)
+        if active:
+            pkwargs = kwargs.get("active_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Active")
+            cseries = ts.loc[(prov_c, 'A')][self.cstats.dates].values
+            ax.plot(cseries, **pkwargs)
+        if recovered:
+            pkwargs = kwargs.get("recovered_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Recovered")
+            cseries = ts.loc[(prov_c, 'R')][self.cstats.dates].values
+            ax.plot(cseries, **pkwargs)
+        if deceased:
+            pkwargs = kwargs.get("deceased_kwargs", {})
+            pkwargs.setdefault("label", f"{prov_name} Deceased")
+            cseries = ts.loc[(prov_c, 'R')][self.cstats.dates].values
+            ax.plot(cseries, **pkwargs)
+
+        labels = [d.date() for d in self.cstats.dates]
+
+        ax.set_title(
+            f"COVID-19 cases by date in {prov_name}\n"
             f"{labels[0]} - {labels[-1]}")
         ax.set_xlabel("Date")
         ax.set_ylabel("N")

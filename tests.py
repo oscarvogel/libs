@@ -174,3 +174,29 @@ def test_plot_grate_full_period(fig_test, fig_ref):
     # expected
     exp_ax = fig_ref.subplots()
     df.plot.grate_full_period(ax=exp_ax)
+
+
+@check_figures_equal()
+def test_plot_time_serie_all(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot("time_serie_all", ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.time_serie_all(ax=exp_ax)
+
+
+@check_figures_equal()
+def test_plot_time_serie(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot("time_serie", ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.time_serie(ax=exp_ax)
