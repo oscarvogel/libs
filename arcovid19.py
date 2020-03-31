@@ -38,6 +38,8 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
+import unicodedata
+
 import attr
 
 import diskcache as dcache
@@ -155,6 +157,26 @@ class CasesPlot:
         ax = plot(ax=ax, **kwargs)
         return ax
 
+    def _plot_df(
+        self, *, odf, prov_name, prov_code,
+        confirmed, active, recovered, deceased
+    ):
+        columns = {}
+        if confirmed:
+            cseries = odf.loc[(prov_code, 'C')][self.cstats.dates].values
+            columns[f"{prov_name} Confirmed"] = cseries
+        if active:
+            cseries = odf.loc[(prov_code, 'A')][self.cstats.dates].values
+            columns[f"{prov_name} Active"] = cseries
+        if recovered:
+            cseries = odf.loc[(prov_code, 'R')][self.cstats.dates].values
+            columns[f"{prov_name} Recovered"] = cseries
+        if deceased:
+            cseries = odf.loc[(prov_code, 'D')][self.cstats.dates].values
+            columns[f"{prov_name} Deceased"] = cseries
+        pdf = pd.DataFrame(columns)
+        return pdf
+
     def grate_full_period_all(
         self, ax=None, argentina=True,
         exclude=None, **kwargs
@@ -163,6 +185,8 @@ class CasesPlot:
         kwargs.setdefault("active", False)
         kwargs.setdefault("recovered", False)
         kwargs.setdefault("deceased", False)
+
+        exclude = [] if exclude is None else exclude
 
         if ax is None:
             ax = plt.gca()
@@ -201,37 +225,18 @@ class CasesPlot:
         active=True, recovered=True, deceased=True,
         ax=None, log=False, **kwargs
     ):
-        ax = plt.gca() if ax is None else ax
-
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
-        if confirmed:
-            pkwargs = kwargs.get("confirmed_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Confirmed")
-            cseries = self.cstats.loc[(prov_c, 'C')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
-        if active:
-            pkwargs = kwargs.get("active_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Active")
-            cseries = self.cstats.loc[(prov_c, 'A')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
-        if recovered:
-            pkwargs = kwargs.get("recovered_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Recovered")
-            cseries = self.cstats.loc[(prov_c, 'R')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
-        if deceased:
-            pkwargs = kwargs.get("deceased_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Deceased")
-            cseries = self.cstats.loc[(prov_c, 'R')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
+        ax = plt.gca() if ax is None else ax
+
+        pdf = self._plot_df(
+            odf=self.cstats.df, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+        pdf.plot.line(ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
 
@@ -242,7 +247,6 @@ class CasesPlot:
         ax.set_ylabel("N")
 
         ax.set_xticklabels(labels=labels, rotation=45)
-
         ax.legend()
 
         return ax
@@ -255,6 +259,8 @@ class CasesPlot:
         kwargs.setdefault("active", False)
         kwargs.setdefault("recovered", False)
         kwargs.setdefault("deceased", False)
+
+        exclude = [] if exclude is None else exclude
 
         if ax is None:
             ax = plt.gca()
@@ -292,34 +298,19 @@ class CasesPlot:
         active=True, recovered=True, deceased=True,
         ax=None, **kwargs
     ):
-        ax = plt.gca() if ax is None else ax
-
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
+        ax = plt.gca() if ax is None else ax
+
         ts = self.cstats.restore_time_serie()
-        if confirmed:
-            pkwargs = kwargs.get("confirmed_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Confirmed")
-            cseries = ts.loc[(prov_c, 'C')][self.cstats.dates].values
-            ax.plot(cseries, **pkwargs)
-        if active:
-            pkwargs = kwargs.get("active_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Active")
-            cseries = ts.loc[(prov_c, 'A')][self.cstats.dates].values
-            ax.plot(cseries, **pkwargs)
-        if recovered:
-            pkwargs = kwargs.get("recovered_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Recovered")
-            cseries = ts.loc[(prov_c, 'R')][self.cstats.dates].values
-            ax.plot(cseries, **pkwargs)
-        if deceased:
-            pkwargs = kwargs.get("deceased_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Deceased")
-            cseries = ts.loc[(prov_c, 'R')][self.cstats.dates].values
-            ax.plot(cseries, **pkwargs)
+        pdf = self._plot_df(
+            odf=ts, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+        pdf.plot.line(ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
 
@@ -332,6 +323,59 @@ class CasesPlot:
         ax.set_xticklabels(labels=labels, rotation=45)
 
         ax.legend()
+
+        return ax
+
+    def barplot(
+        self, provincia=None, confirmed=True,
+        active=True, recovered=True, deceased=True,
+        ax=None, **kwargs
+    ):
+        ax = plt.gca() if ax is None else ax
+
+        if provincia is None:
+            prov_name, prov_c = "Argentina", "ARG"
+        else:
+            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+
+        ts = self.cstats.restore_time_serie()
+        pdf = self._plot_df(
+            odf=ts, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+
+        pdf.plot.bar(ax=ax, **kwargs)
+
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+        ax.legend()
+
+        return ax
+
+    def boxplot(
+        self, provincia=None, confirmed=True,
+        active=True, recovered=True, deceased=True,
+        ax=None, **kwargs
+    ):
+        ax = plt.gca() if ax is None else ax
+
+        if provincia is None:
+            prov_name, prov_c = "Argentina", "ARG"
+        else:
+            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+
+        ts = self.cstats.restore_time_serie()
+        pdf = self._plot_df(
+            odf=ts, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+        pdf.plot.box(ax=ax, **kwargs)
+
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 
         return ax
 
@@ -392,9 +436,15 @@ class CasesFrame:
         name or code.
 
         """
-        prov_lc = provincia.lower()
+        def norm(text):
+            text = text.lower()
+            text = unicodedata.normalize('NFD', text)\
+                .encode('ascii', 'ignore')\
+                .decode("utf-8")
+            return str(text)
+        prov_norm = norm(provincia)
         for name, code in PROVINCIAS.items():
-            if name.lower() == prov_lc or code.lower() == prov_lc:
+            if norm(name) == prov_norm or norm(code) == prov_norm:
                 return name, code
         raise ValueError(f"Unknown provincia'{provincia}'")
 

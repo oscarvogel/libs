@@ -200,3 +200,29 @@ def test_plot_time_serie(fig_test, fig_ref):
     # expected
     exp_ax = fig_ref.subplots()
     df.plot.time_serie(ax=exp_ax)
+
+
+@check_figures_equal()
+def test_plot_barplot(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot("barplot", ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.barplot(ax=exp_ax)
+
+
+@check_figures_equal()
+def test_plot_boxplot(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot("boxplot", ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.boxplot(ax=exp_ax)
