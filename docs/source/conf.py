@@ -10,9 +10,18 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+import pathlib
+
+
+# this path is pointing to project/docs/source
+CURRENT_PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
+ARCOVID19_PATH = CURRENT_PATH.parent.parent
+
+sys.path.insert(0, str(ARCOVID19_PATH))
+
+import arcovid19
 
 
 # -- Project information -----------------------------------------------------
@@ -20,6 +29,11 @@
 project = 'arcovid19'
 copyright = '2020, ivco19'
 author = 'ivco19'
+
+# The short X.Y version.
+version = arcovid19.__version__
+# The full version, including alpha/beta/rc tags
+release = arcovid19.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -63,6 +77,9 @@ exclude_patterns = [
 #
 # source_suffix = ['.rst', '.md']
 source_suffix = ['.rst', '.ipynb']
+
+# The master toctree document.
+master_doc = 'index'
 
 # -- Options for HTML output -------------------------------------------------
 

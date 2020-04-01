@@ -62,6 +62,16 @@ BibText::
     }
 
 
+Contact:
+--------
+
+Juan B. Cabral: jbcabral@unc.edu.ar
+
+Bruno Sánchez: bruno.sanchez@duke.edu
+
+Vanessa Daza: vanessa.daza@unc.edu.ar
+
+
 
 Contents:
 ---------
@@ -73,10 +83,3 @@ Contents:
     tutorial/tutorial.rst
 
 
-Contact:
---------
-Juan B. Cabral: jbc.develop@gmail.com 
-
-Bruno Sánchez: bruno.sanchez@duke.edu 
-
-Vanessa Daza: vanessa.daza@unc.edu.ar 
