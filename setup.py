@@ -47,8 +47,9 @@ with open(PATH / "README.rst") as fp:
     LONG_DESCRIPTION = fp.read()
 
 
-DESCRIPTION = """Utilities to access different Argentina-Related databases
-of COVID-19 data from the IATE task force."""
+DESCRIPTION = (
+    "Utilities to access different Argentina-Related databases of "
+    "COVID-19 data from the IATE task force.")
 
 
 with open(PATH / "arcovid19.py") as fp:
@@ -70,7 +71,7 @@ def do_setup():
         author="IATE COVID-19 Task Force",
         author_email="jbc.develop@gmail.com",
         url="https://github.com/ivco19/libs",
-        license="3 Clause BSD",
+        license="BSD-3",
         keywords=["covid-19", "project", "datasets", "argentina"],
         classifiers=(
             "Development Status :: 4 - Beta",

@@ -13,10 +13,10 @@
 # DOCS
 # =============================================================================
 
-"""Parser of COVID-19 data from the IATE task force.
+"""Utilities to access different Argentina-Related databases of
+COVID-19 data from the IATE task force.
 
 """
-
 
 __all__ = [
     "DEFAULT_CACHE_DIR",
@@ -26,7 +26,7 @@ __all__ = [
     "CasesFrame",
     "load_cases"]
 
-__version__ = "2020.4.1"
+__version__ = "2020.4.1b"
 
 
 # =============================================================================

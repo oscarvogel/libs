@@ -2,7 +2,6 @@
 
 """
 Setuptools bootstrapping installer.
-
 Run this script to install or upgrade setuptools.
 """
 
@@ -38,7 +37,6 @@ DEFAULT_SAVE_DIR = os.curdir
 def _python_cmd(*args):
     """
     Execute a command.
-
     Return True if the command succeeded.
     """
     args = (sys.executable,) + args
@@ -90,7 +88,6 @@ class ContextualZipFile(zipfile.ZipFile):
 def archive_context(filename):
     """
     Unzip filename to a temporary directory, set to the cwd.
-
     The unzipped target is cleaned up after.
     """
     tmpdir = tempfile.mkdtemp()
@@ -136,7 +133,6 @@ def use_setuptools(
         to_dir=DEFAULT_SAVE_DIR, download_delay=15):
     """
     Ensure that a setuptools version is installed.
-
     Return None. Raise SystemExit if the requested version
     or later cannot be installed.
     """
@@ -180,7 +176,6 @@ def _conflict_bail(VC_err, version):
         and can't be installed while this script is running. Please
         install a more recent version first, using
         'easy_install -U setuptools'.
-
         (Currently using {VC_err.args[0]!r})
         """)
     msg = conflict_tmpl.format(**locals())
@@ -200,7 +195,6 @@ def _unload_pkg_resources():
 def _clean_check(cmd, target):
     """
     Run the command to download target.
-
     If the command fails, clean up before re-raising the error.
     """
     try:
@@ -214,7 +208,6 @@ def _clean_check(cmd, target):
 def download_file_powershell(url, target):
     """
     Download the file at url to target using Powershell.
-
     Powershell will validate trust.
     Raise an exception if the command cannot complete.
     """
@@ -311,13 +304,11 @@ def download_setuptools(
         downloader_factory=get_best_downloader):
     """
     Download setuptools from a specified location and return its filename.
-
     `version` should be a valid setuptools version number that is available
     as an sdist for download under the `download_base` URL (which should end
     with a '/'). `to_dir` is the directory where the egg will be downloaded.
     `delay` is the number of seconds to pause before an actual download
     attempt.
-
     ``downloader_factory`` should be a function taking no arguments and
     returning a function for downloading a URL to a target.
     """
@@ -336,7 +327,6 @@ def download_setuptools(
 def _build_install_args(options):
     """
     Build the arguments to 'python setup.py install' on the setuptools package.
-
     Returns list of command line arguments.
     """
     return ['--user'] if options.user_install else []
