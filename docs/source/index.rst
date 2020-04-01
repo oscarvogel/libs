@@ -6,7 +6,7 @@
 Arcovid19
 ========================================
 
-|Build Status| |Python 3| |BSD-3| |Documentation Status|
+|Build Status| |Python 3| |BSD-3| |Documentation Status| |PyPI|
 
 .. |Build Status| image:: https://travis-ci.org/ivco19/libs.svg?branch=master
    :target: https://travis-ci.org/ivco19/libs
@@ -16,6 +16,8 @@ Arcovid19
    :target: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
 .. |Documentation Status| image:: https://readthedocs.org/projects/arcovid19/badge/?version=latest
    :target: https://arcovid19.readthedocs.io/en/latest/?badge=latest
+.. |PyPI| image:: https://img.shields.io/pypi/v/arcovid19
+   :target: https://pypi.org/project/arcovid19/
 
 .. toctree::
    :maxdepth: 2
