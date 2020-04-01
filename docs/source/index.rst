@@ -73,6 +73,10 @@ Contents:
     tutorial/tutorial.rst
 
 
-References
-----------
-.. []
+Contact:
+--------
+Juan B. Cabral: jbc.develop@gmail.com 
+
+Bruno Sánchez: bruno.sanchez@duke.edu 
+
+Vanessa Daza: vanessa.daza@unc.edu.ar 

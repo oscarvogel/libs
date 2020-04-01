@@ -28,6 +28,7 @@ import pathlib
 import pytest
 
 import numpy as np
+
 import pandas as pd
 
 from matplotlib.testing.decorators import check_figures_equal

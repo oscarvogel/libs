@@ -38,6 +38,8 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
+import unicodedata
+
 import attr
 
 import diskcache as dcache
@@ -105,7 +107,7 @@ logger = logging.getLogger("arcovid19")
 # FUNCTIONS_
 # =============================================================================
 
-def from_cache(fname, on_not_found, **kwargs):
+def from_cache(fname, on_not_found, cached=True, **kwargs):
     """Simple cache orchestration.
 
     """
@@ -115,7 +117,10 @@ def from_cache(fname, on_not_found, **kwargs):
     with CACHE as cache:
         cache.expire()
 
-        value = cache.get(key, default=dcache.core.ENOVAL, retry=True)
+        value = (
+            cache.get(key, default=dcache.core.ENOVAL, retry=True)
+            if cached else dcache.core.ENOVAL)
+
         if value is dcache.core.ENOVAL:
             value = on_not_found()
             cache.set(
@@ -152,6 +157,26 @@ class CasesPlot:
         ax = plot(ax=ax, **kwargs)
         return ax
 
+    def _plot_df(
+        self, *, odf, prov_name, prov_code,
+        confirmed, active, recovered, deceased
+    ):
+        columns = {}
+        if confirmed:
+            cseries = odf.loc[(prov_code, 'C')][self.cstats.dates].values
+            columns[f"{prov_name} Confirmed"] = cseries
+        if active:
+            cseries = odf.loc[(prov_code, 'A')][self.cstats.dates].values
+            columns[f"{prov_name} Active"] = cseries
+        if recovered:
+            cseries = odf.loc[(prov_code, 'R')][self.cstats.dates].values
+            columns[f"{prov_name} Recovered"] = cseries
+        if deceased:
+            cseries = odf.loc[(prov_code, 'D')][self.cstats.dates].values
+            columns[f"{prov_name} Deceased"] = cseries
+        pdf = pd.DataFrame(columns)
+        return pdf
+
     def grate_full_period_all(
         self, ax=None, argentina=True,
         exclude=None, **kwargs
@@ -161,16 +186,27 @@ class CasesPlot:
         kwargs.setdefault("recovered", False)
         kwargs.setdefault("deceased", False)
 
+        exclude = [] if exclude is None else exclude
+
+        if ax is None:
+            ax = plt.gca()
+            fig = plt.gcf()
+
+            height = len(PROVINCIAS) - len(exclude) - int(argentina)
+            height = 4 if height <= 0 else (height)
+
+            fig.set_size_inches(12, height)
+
         if argentina:
-            ax = self.grate_full_period(provincia=None, ax=ax, **kwargs)
+            self.grate_full_period(provincia=None, ax=ax, **kwargs)
 
         exclude = [] if exclude is None else exclude
         exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
 
-        for code in sorted(PROVINCIAS.values()):
+        for code in sorted(PROVINCIAS):
             if code in exclude:
                 continue
-            ax = self.grate_full_period(provincia=code, ax=ax, **kwargs)
+            self.grate_full_period(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
 
@@ -189,37 +225,18 @@ class CasesPlot:
         active=True, recovered=True, deceased=True,
         ax=None, log=False, **kwargs
     ):
-        ax = plt.gca() if ax is None else ax
-
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
-        if confirmed:
-            pkwargs = kwargs.get("confirmed_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Confirmed")
-            cseries = self.cstats.loc[(prov_c, 'C')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
-        if active:
-            pkwargs = kwargs.get("active_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Active")
-            cseries = self.cstats.loc[(prov_c, 'A')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
-        if recovered:
-            pkwargs = kwargs.get("recovered_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Recovered")
-            cseries = self.cstats.loc[(prov_c, 'R')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
-        if deceased:
-            pkwargs = kwargs.get("deceased_kwargs", {})
-            pkwargs.setdefault("label", f"{prov_name} Deceased")
-            cseries = self.cstats.loc[(prov_c, 'R')][self.cstats.dates].values
-            cseries = safe_log(cseries) if log else cseries
-            ax.plot(cseries, **pkwargs)
+        ax = plt.gca() if ax is None else ax
+
+        pdf = self._plot_df(
+            odf=self.cstats.df, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+        pdf.plot.line(ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
 
@@ -230,8 +247,135 @@ class CasesPlot:
         ax.set_ylabel("N")
 
         ax.set_xticklabels(labels=labels, rotation=45)
+        ax.legend()
+
+        return ax
+
+    def time_serie_all(
+        self, ax=None, argentina=True,
+        exclude=None, **kwargs
+    ):
+        kwargs.setdefault("confirmed", True)
+        kwargs.setdefault("active", False)
+        kwargs.setdefault("recovered", False)
+        kwargs.setdefault("deceased", False)
+
+        exclude = [] if exclude is None else exclude
+
+        if ax is None:
+            ax = plt.gca()
+            fig = plt.gcf()
+
+            height = len(PROVINCIAS) - len(exclude) - int(argentina)
+            height = 4 if height <= 0 else (height)
+
+            fig.set_size_inches(12, height)
+
+        if argentina:
+            self.time_serie(provincia=None, ax=ax, **kwargs)
+
+        exclude = [] if exclude is None else exclude
+        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
+
+        for code in sorted(PROVINCIAS):
+            if code in exclude:
+                continue
+            self.time_serie(provincia=code, ax=ax, **kwargs)
+
+        labels = [d.date() for d in self.cstats.dates]
+
+        ax.set_title(
+            "COVID-19 cases by date in Argentina by Province\n"
+            f"{labels[0]} - {labels[-1]}")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(labels=labels, rotation=45)
+        return ax
+
+    def time_serie(
+        self, provincia=None, confirmed=True,
+        active=True, recovered=True, deceased=True,
+        ax=None, **kwargs
+    ):
+        if provincia is None:
+            prov_name, prov_c = "Argentina", "ARG"
+        else:
+            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+
+        ax = plt.gca() if ax is None else ax
+
+        ts = self.cstats.restore_time_serie()
+        pdf = self._plot_df(
+            odf=ts, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+        pdf.plot.line(ax=ax, **kwargs)
+
+        labels = [d.date() for d in self.cstats.dates]
+
+        ax.set_title(
+            f"COVID-19 cases by date in {prov_name}\n"
+            f"{labels[0]} - {labels[-1]}")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(labels=labels, rotation=45)
 
         ax.legend()
+
+        return ax
+
+    def barplot(
+        self, provincia=None, confirmed=True,
+        active=True, recovered=True, deceased=True,
+        ax=None, **kwargs
+    ):
+        ax = plt.gca() if ax is None else ax
+
+        if provincia is None:
+            prov_name, prov_c = "Argentina", "ARG"
+        else:
+            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+
+        ts = self.cstats.restore_time_serie()
+        pdf = self._plot_df(
+            odf=ts, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+
+        pdf.plot.bar(ax=ax, **kwargs)
+
+        ax.set_xlabel("Date")
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+        ax.legend()
+
+        return ax
+
+    def boxplot(
+        self, provincia=None, confirmed=True,
+        active=True, recovered=True, deceased=True,
+        ax=None, **kwargs
+    ):
+        ax = plt.gca() if ax is None else ax
+
+        if provincia is None:
+            prov_name, prov_c = "Argentina", "ARG"
+        else:
+            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+
+        ts = self.cstats.restore_time_serie()
+        pdf = self._plot_df(
+            odf=ts, prov_name=prov_name, prov_code=prov_c,
+            confirmed=confirmed, active=active,
+            recovered=recovered, deceased=deceased)
+        pdf.plot.box(ax=ax, **kwargs)
+
+        ax.set_ylabel("N")
+
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 
         return ax
 
@@ -287,26 +431,39 @@ class CasesFrame:
         """Returns latest value of total confirmed cases"""
         return self.df.loc[('ARG', 'C'), self.dates[-1]]
 
-    def get_provincia_name(self, provincia):
-        """Resolve and validate the name of a given provincia name or code."""
-        if provincia in PROVINCIAS.keys():
-            return provincia
-        provincia_lowercase = provincia.lower()
-        for name, code in PROVINCIAS.items():
-            if name.lower() == provincia_lowercase:
-                return PROVINCIAS.get(provincia)
-        raise ValueError(f"Unknow provincia'{provincia}'")
-
     def get_provincia_name_code(self, provincia):
         """Resolve and validate the name and code of a given provincia
         name or code.
 
         """
-        prov_lc = provincia.lower()
+        def norm(text):
+            text = text.lower()
+            text = unicodedata.normalize('NFD', text)\
+                .encode('ascii', 'ignore')\
+                .decode("utf-8")
+            return str(text)
+        prov_norm = norm(provincia)
         for name, code in PROVINCIAS.items():
-            if name.lower() == prov_lc or code.lower() == prov_lc:
+            if norm(name) == prov_norm or norm(code) == prov_norm:
                 return name, code
-        raise ValueError(f"Unknow provincia'{provincia}'")
+        raise ValueError(f"Unknown provincia'{provincia}'")
+
+    def restore_time_serie(self):
+        """Retrieve a new pandas.DataFrame but with observations
+        by Date.
+        """
+        def _cumdiff(row):
+            shifted = np.roll(row, 1)
+            shifted[0] = 0
+            diff = row - shifted
+            return diff
+
+        idxs = ~self.df.index.isin([('ARG', 'growth_rate_C')])
+        cols = self.dates
+
+        uncum = self.df.copy()
+        uncum.loc[idxs, cols] = uncum.loc[idxs][cols].apply(_cumdiff, axis=1)
+        return uncum
 
     def last_growth_rate(self, provincia=None):
         """Returns the last available growth rate for the whole country
@@ -337,7 +494,7 @@ class CasesFrame:
         return pd.Series(index=self.dates[1:], data=growth_rate)
 
 
-def load_cases(*, url=CASES_URL, out=None):
+def load_cases(url=CASES_URL, cached=True):
     """Utility function to parse all the actual cases of the COVID-19 in
     Argentina.
 
@@ -346,12 +503,10 @@ def load_cases(*, url=CASES_URL, out=None):
     ----------
 
     url: str
-        The url for the excel table to parse. Default is ivco19 team table
+        The url for the excel table to parse. Default is ivco19 team table.
 
-    out: str, path to store the dataset or None.
-        The dataset was stored as csv file. If its None the dataset was not
-        stored.
-
+    cached : bool
+        If you want to use the local cache or retrieve a new value.
 
     Returns
     -------
@@ -367,6 +522,7 @@ def load_cases(*, url=CASES_URL, out=None):
     df_infar = from_cache(
         fname="load_cases",
         on_not_found=lambda: pd.read_excel(url, sheet_name=0, nrows=96),
+        cached=cached,
         url=url)
 
     # load table and replace Nan by zeros
@@ -417,9 +573,6 @@ def load_cases(*, url=CASES_URL, out=None):
     growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
-    if out is not None:
-        df_infar.to_csv(out)
-
     return CasesFrame(df=df_infar)
 
 
@@ -427,6 +580,29 @@ def load_cases(*, url=CASES_URL, out=None):
 # MAIN_
 # =============================================================================
 
-if __name__ == '__main__':
+def main():
     from clize import run
-    run(load_cases)
+
+    def _load_cases(*, url=CASES_URL, nocached=False, out=None):
+        """Retrieve and store the database as an as CSV file.
+
+        url: str
+            The url for the excel table to parse. Default is ivco19 team table.
+
+        out: PATH
+            The output path to the CSV file
+
+        nocached:
+            If you want to ignore the local cache or retrieve a new value.
+
+        """
+        cases = load_cases(url=url, cached=not nocached)
+        if out is not None:
+            cases.to_csv(out)
+        else:
+            print(cases)
+    run(_load_cases)
+
+
+if __name__ == '__main__':
+    main()
