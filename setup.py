@@ -43,7 +43,7 @@ REQUIREMENTS = [
     "matplotlib", "seaborn"]
 
 
-with open(PATH / "README.md") as fp:
+with open(PATH / "README.rst") as fp:
     LONG_DESCRIPTION = fp.read()
 
 
@@ -67,7 +67,6 @@ def do_setup():
         version=VERSION,
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
-        long_description_content_type='text/markdown',
         author="IATE COVID-19 Task Force",
         author_email="jbc.develop@gmail.com",
         url="https://github.com/ivco19/libs",
