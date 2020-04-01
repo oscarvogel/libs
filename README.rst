@@ -1,7 +1,7 @@
 Arcovid19
 =========
 
-|Build Status| |Python 3| |BSD-3| |Documentation Status|
+|Build Status| |Python 3| |BSD-3| |Documentation Status| |PyPI|
 
 This library contains the utilities to access different
 Argentina-Related databases of COVID-19 data from the IATE task force.
@@ -107,3 +107,5 @@ Please cite:
    :target: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
 .. |Documentation Status| image:: https://readthedocs.org/projects/arcovid19/badge/?version=latest
    :target: https://arcovid19.readthedocs.io/en/latest/?badge=latest
+.. |PyPI| image:: https://img.shields.io/pypi/v/arcovid19
+   :target: https://pypi.org/project/arcovid19/
