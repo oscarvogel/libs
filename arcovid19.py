@@ -32,6 +32,7 @@ __version__ = "2020.04.01"
 # =============================================================================
 
 import os
+import sys
 import datetime as dt
 
 import logging
@@ -593,8 +594,9 @@ def main():
         url: str
             The url for the excel table to parse. Default is ivco19 team table.
 
-        out: PATH
-            The output path to the CSV file
+        out: PATH (default=stdout)
+            The output path to the CSV file. If it's not provided the
+            data is printed in the stdout.
 
         nocached:
             If you want to ignore the local cache or retrieve a new value.
@@ -604,7 +606,7 @@ def main():
         if out is not None:
             cases.to_csv(out)
         else:
-            print(cases)
+            cases.to_csv(sys.stdout)
     run(_load_cases)
 
 

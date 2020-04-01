@@ -97,6 +97,7 @@ Contents:
     :maxdepth: 2
 
     install/install.rst
+    install/cli.rst
     tutorial/tutorial.rst
     api/modules.rst
 
