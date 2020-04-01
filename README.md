@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ivco19/libs.svg?branch=master)](https://travis-ci.org/ivco19/libs)
 [![Python 3](https://img.shields.io/badge/python-3.7+-blue.svg)](https://badge.fury.io/py/arcovid19)
 [![BSD-3](https://img.shields.io/badge/License-BSD3-blue.svg)](https://tldrlegal.com/license/bsd-3-clause-license-(revised))
-[![Documentation Status](https://readthedocs.org/projects/arcovic19/badge/?version=latest)](https://arcovic19.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/arcovid19/badge/?version=latest)](https://arcovid19.readthedocs.io/en/latest/?badge=latest)
 
 
 
