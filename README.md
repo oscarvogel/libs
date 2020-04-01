@@ -1,4 +1,4 @@
-# ivco19 Libraries repo
+# Arcovid19
 
 [![Build Status](https://travis-ci.org/ivco19/libs.svg?branch=master)](https://travis-ci.org/ivco19/libs)
 [![Python 3](https://img.shields.io/badge/python-3.7+-blue.svg)](https://badge.fury.io/py/arcovid19)
