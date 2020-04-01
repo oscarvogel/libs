@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/ivco19/libs.svg?branch=master)](https://travis-ci.org/ivco19/libs)
 [![Python 3](https://img.shields.io/badge/python-3.7+-blue.svg)](https://badge.fury.io/py/arcovid19)
 [![BSD-3](https://img.shields.io/badge/License-BSD3-blue.svg)](https://tldrlegal.com/license/bsd-3-clause-license-(revised))
+[![Documentation Status](https://readthedocs.org/projects/arcovic19/badge/?version=latest)](https://arcovic19.readthedocs.io/en/latest/?badge=latest)
+
 
 
 This libraries contains the utilities to access different Argentina-Related databases
@@ -16,17 +18,17 @@ $ pip install arcovid19
 
 ## Authors
 
-- Dr. Juan B Cabral (CIFASIS-UNR, IATE-OAC-UNC).
-- Sr. Mauricio Koraj (Liricus SRL.).
-- Lic. Vanessa Daza (IATE-OAC-UNC, FaMAF-UNC).
-- Dr. Mariano Dominguez (IATE-OAC-UNC, FaMAF-UNC).
-- Dr. Marcelo Lares (IATE-OAC-UNC, FaMAF-UNC).
-- Mgt. Nadia Luczywo (LIMI-FCEFyN-UNC, IED-FCE-UNC, FCA-IUA-UNDEF)
-- Dr. Dante Paz (IATE-OAC-UNC, FaMAF-UNC).
-- Dr. Rodrigo Quiroga (INFIQC-CFQ, FCQ-UNC).
-- Dr. Martín de los Ríos (ICTP-SAIFR).
-- Dr. Bruno Sanchez (Department of Physics, Duke University).
-- Dr. Federico Stasyszyn (IATE-OAC, FaMAF-UNC).
+- Juan B Cabral (CIFASIS-UNR, IATE-OAC-UNC).
+- Mauricio Koraj (Liricus SRL.).
+- Vanessa Daza (IATE-OAC-UNC, FaMAF-UNC).
+- Mariano Dominguez (IATE-OAC-UNC, FaMAF-UNC).
+- Marcelo Lares (IATE-OAC-UNC, FaMAF-UNC).
+- Nadia Luczywo (LIMI-FCEFyN-UNC, IED-FCE-UNC, FCA-IUA-UNDEF)
+- Dante Paz (IATE-OAC-UNC, FaMAF-UNC).
+- Rodrigo Quiroga (INFIQC-CFQ, FCQ-UNC).
+- Martín de los Ríos (ICTP-SAIFR).
+- Bruno Sanchez (Department of Physics, Duke University).
+- Federico Stasyszyn (IATE-OAC, FaMAF-UNC).
 
 ## Functionalities
 
