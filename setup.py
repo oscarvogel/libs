@@ -47,10 +47,8 @@ with open(PATH / "README.md") as fp:
     LONG_DESCRIPTION = fp.read()
 
 
-DESCRIPTION = " ".join(
-    LONG_DESCRIPTION.split("## Authors", 1)[0].split(
-        "\n", 1)[-1].splitlines()).strip()
-
+DESCRIPTION = """Utilities to access different Argentina-Related databases
+of COVID-19 data from the IATE task force."""
 
 with open(PATH / "arcovid19.py") as fp:
     VERSION = [

@@ -7,7 +7,7 @@
 
 
 
-This libraries contains the utilities to access different Argentina-Related databases
+This library contains the utilities to access different Argentina-Related databases
 of COVID-19 data from the IATE task force.
 
 ## Installation
