@@ -177,6 +177,29 @@ def test_plot_grate_full_period(fig_test, fig_ref):
 
 
 @check_figures_equal()
+def test_plot_grate_full_period_all_equivalent_calls(fig_test, fig_ref):
+    cases = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    fig_test.set_size_inches(12, 12)
+    test_ax = fig_test.subplots()
+    cases.plot.grate_full_period_all(ax=test_ax)
+    test_ax.set_title("")
+
+    # expected
+    fig_ref.set_size_inches(12, 12)
+    exp_ax = fig_ref.subplots()
+
+    cases.plot.grate_full_period(
+        deceased=False, active=False, recovered=False, ax=exp_ax)
+    for prov in sorted(arcovid19.PROVINCIAS):
+        cases.plot.grate_full_period(
+            prov, deceased=False, active=False, recovered=False, ax=exp_ax)
+
+    exp_ax.set_title("")
+
+
+@check_figures_equal()
 def test_plot_time_serie_all(fig_test, fig_ref):
     df = arcovid19.load_cases(url=LOCAL_CASES)
 
@@ -200,6 +223,29 @@ def test_plot_time_serie(fig_test, fig_ref):
     # expected
     exp_ax = fig_ref.subplots()
     df.plot.time_serie(ax=exp_ax)
+
+
+@check_figures_equal()
+def test_plot_time_serie_all_equivalent_calls(fig_test, fig_ref):
+    cases = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    fig_test.set_size_inches(12, 12)
+    test_ax = fig_test.subplots()
+    cases.plot.time_serie_all(ax=test_ax)
+    test_ax.set_title("")
+
+    # expected
+    fig_ref.set_size_inches(12, 12)
+    exp_ax = fig_ref.subplots()
+
+    cases.plot.time_serie(
+        deceased=False, active=False, recovered=False, ax=exp_ax)
+    for prov in sorted(arcovid19.PROVINCIAS):
+        cases.plot.time_serie(
+            prov, deceased=False, active=False, recovered=False, ax=exp_ax)
+
+    exp_ax.set_title("")
 
 
 @check_figures_equal()

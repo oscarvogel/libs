@@ -203,7 +203,7 @@ class CasesPlot:
         exclude = [] if exclude is None else exclude
         exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
 
-        for code in sorted(PROVINCIAS.values()):
+        for code in sorted(PROVINCIAS):
             if code in exclude:
                 continue
             self.grate_full_period(provincia=code, ax=ax, **kwargs)
@@ -277,10 +277,10 @@ class CasesPlot:
         exclude = [] if exclude is None else exclude
         exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
 
-        for code in sorted(PROVINCIAS.values()):
+        for code in sorted(PROVINCIAS):
             if code in exclude:
                 continue
-            self.grate_full_period(provincia=code, ax=ax, **kwargs)
+            self.time_serie(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
 
