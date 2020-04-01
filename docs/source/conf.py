@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'arcovid-libs'
+project = 'arcovid19'
 copyright = '2020, ivco19'
 author = 'ivco19'
 
