@@ -5,7 +5,7 @@
 [![BSD-3](https://img.shields.io/badge/License-BSD3-blue.svg)](https://tldrlegal.com/license/bsd-3-clause-license-(revised))
 
 
-This libraries contains the utilities to access different databases
+This libraries contains the utilities to access different Argentina-Related databases
 of COVID-19 data from the IATE task force.
 
 ## Installation
