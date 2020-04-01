@@ -18,7 +18,11 @@
 """
 
 
-__all__ = ["load_cases"]
+__all__ = [
+    "DEFAULT_CACHE_DIR",
+    "CACHE",
+    "CACHE_EXPIRE",
+    "load_cases"]
 
 __version__ = "2020.04.01"
 
@@ -51,13 +55,13 @@ import diskcache as dcache
 
 ARCOVID19_DATA = os.path.expanduser(os.path.join('~', 'arcovid19_data'))
 
-
+#: Default cache location, (default=~/arcovid_19_data/_cache_)
 DEFAULT_CACHE_DIR = os.path.join(ARCOVID19_DATA, "_cache_")
 
-
+#: Default cache instance
 CACHE = dcache.Cache(directory=DEFAULT_CACHE_DIR, disk_min_file_size=0)
 
-
+#: Time to expire of every load_cases call in seconds
 CACHE_EXPIRE = 60 * 60  # ONE HOUR
 
 
@@ -511,12 +515,12 @@ def load_cases(url=CASES_URL, cached=True):
     Returns
     -------
 
-    CasesFrame:
+    CasesFrame: Pandas-DataFrame like object with all the arcovid19 datatabase.
 
-        A table parsing the Excel file spreadsheet 0 (called BD).
         It features a pandas multi index, with the following hierarchy:
-            level 0: cod_provincia - Argentina states
-            level 1: cod_status - Four states of disease patients (R, C, A, D)
+
+        - level 0: cod_provincia - Argentina states
+        - level 1: cod_status - Four states of disease patients (R, C, A, D)
 
     """
     df_infar = from_cache(

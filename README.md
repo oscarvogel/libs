@@ -30,50 +30,15 @@ $ pip install arcovid19
 - Bruno Sanchez (Department of Physics, Duke University).
 - Federico Stasyszyn (IATE-OAC, FaMAF-UNC).
 
-## Functionalities
+## Documentation
 
-### `def load_cases(*, url=TABLA_URL, orientation='wide', out=None)`
+Check our documentation and tutorial here: https://arcovid19.readthedocs.io/
 
-Utility function to parse all the actual cases of the COVID-19 in
-Argentina.
-
-**Raw Data**
+## Raw Data
 
 - [Viewer](https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub)
-- [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub?output=csv)
-- [XLSX](https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub?output=xlsx)
-
-
-#### Parameters
-
-url: str
-    The url for the excel table to parse. Default is ivco19 team table
-
-orientation: str, 'wide' or 'long'
-    The format of the table. If wide, dates are going to be columns.
-    If in turn, long, dates are going to be rows, regions are going to
-    be columns. Under the hood is callin df.transpose() method from Pandas.
-
-out: str, path to store the dataset or None.
-    The dataset was stored as csv file. If its None the dataset was not
-    stored.
-
-
-#### Returns
-
-df_infar: Pandas.DataFrame object
-
-    A table parsing the Excel file spreadsheet 0 (called BD).
-    It features a pandas multi index, with the following hierarchy:
-        level 0: cod_provincia - Argentina states
-        level 1: cod_status - Four states of disease patients (R, C, A, D)
-
-### Notes
-
-All by default all the values are cached for 1hr. Tho change the time
-set the variable `arcovid19.CACHE_EXPIRE` to your desired time in seconds.
-
-To clear all the cache run `arcovid19.CACHE.clear()`
+- [CSV](https://raw.githubusercontent.com/ivco19/libs/master/databases/cases.csv)
+- [XLSX](https://raw.githubusercontent.com/ivco19/libs/master/databases/cases.xlsx)
 
 
 ## Citation

@@ -1,4 +1,4 @@
-Install arcovid-libs
+Installation
 ====================
 
 This is the recommended way to install arcovid-libs.
@@ -23,7 +23,7 @@ Installing the development version
 If you’d like to be able to update your corral code occasionally with the latest bug fixes and
 improvements, follow these instructions:
 
-Make sure that you have Git installed and that you can run its commands from a shell. 
+Make sure that you have Git installed and that you can run its commands from a shell.
 (Enter *git help* at a shell prompt to test this.)
 
 Check out arcovid-libs main development branch like so:
@@ -34,7 +34,7 @@ Check out arcovid-libs main development branch like so:
 
 This will create a directory libs in your current directory.
 
-    
+
 
 
 

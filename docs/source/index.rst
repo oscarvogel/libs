@@ -3,8 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to arcovid19 documentation!
+Arcovid19
 ========================================
+
+|Build Status| |Python 3| |BSD-3| |Documentation Status|
+
+.. |Build Status| image:: https://travis-ci.org/ivco19/libs.svg?branch=master
+   :target: https://travis-ci.org/ivco19/libs
+.. |Python 3| image:: https://img.shields.io/badge/python-3.7+-blue.svg
+   :target: https://badge.fury.io/py/arcovid19
+.. |BSD-3| image:: https://img.shields.io/badge/License-BSD3-blue.svg
+   :target: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
+.. |Documentation Status| image:: https://readthedocs.org/projects/arcovid19/badge/?version=latest
+   :target: https://arcovid19.readthedocs.io/en/latest/?badge=latest
 
 .. toctree::
    :maxdepth: 2
@@ -13,7 +24,7 @@ Welcome to arcovid19 documentation!
 Libs is a package to use the COV-19 data analysis tool. It has a module written in python called arcovid19 dedicated to the
 analysis of all real cases of COVID-19 in Argentina.
 
-Arcovid is made up of two classes CasesFrame and CasesPlot, these tools are used to report the analysis of COVID-19 data in Argentina
+Arcovid19 is made up of two classes CasesFrame and CasesPlot, these tools are used to report the analysis of COVID-19 data in Argentina
 from tables and visualizations. Furthermore, the CasesFrame class inherits and adds functionalities to the DataFrame class of Pandas.
 
 License
@@ -61,16 +72,22 @@ BibText::
         year = {2020}
     }
 
+Raw Data
+--------
+
+-  `Viewer <https://docs.google.com/spreadsheets/d/e/2PACX-1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub>`__
+-  `CSV <https://raw.githubusercontent.com/ivco19/libs/master/databases/cases.csv>`__
+-  `XLSX <https://raw.githubusercontent.com/ivco19/libs/master/databases/cases.xlsx>`__
+
 
 Contact:
 --------
 
-Juan B. Cabral: jbcabral@unc.edu.ar
+For bugs or question please contact
 
-Bruno Sánchez: bruno.sanchez@duke.edu
-
-Vanessa Daza: vanessa.daza@unc.edu.ar
-
+- **Juan B. Cabral:** jbcabral@unc.edu.ar
+- **Bruno Sánchez:** bruno.sanchez@duke.edu
+- **Vanessa Daza:** vanessa.daza@unc.edu.ar
 
 
 Contents:
@@ -81,5 +98,6 @@ Contents:
 
     install/install.rst
     tutorial/tutorial.rst
+    api/modules.rst
 
 
