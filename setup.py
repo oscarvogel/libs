@@ -50,6 +50,7 @@ with open(PATH / "README.md") as fp:
 DESCRIPTION = """Utilities to access different Argentina-Related databases
 of COVID-19 data from the IATE task force."""
 
+
 with open(PATH / "arcovid19.py") as fp:
     VERSION = [
         l for l in fp.readlines() if l.startswith("__version__")
