@@ -36,6 +36,7 @@ __version__ = "0.4"
 import os
 import sys
 import datetime as dt
+import itertools as it
 
 import logging
 
@@ -96,6 +97,18 @@ PROVINCIAS = {
     'La Rioja': 'LAR',
     'San Juan': 'SJU',
     'La Pampa': 'LPA'}
+
+
+# this alias fixes the original typos
+PROVINCIAS_ALIAS = {
+    'Tierra del Fuego': "TF",
+    'Neuquén': "NQ",
+    "Santiago del Estero": "SDE"
+}
+
+# esto guarda el último alias como el nombre correcto de la provincia
+CODE_TO_POVINCIA = {
+    v: k for k, v in it.chain(PROVINCIAS.items(), PROVINCIAS_ALIAS.items())}
 
 
 STATUS = {
@@ -160,6 +173,10 @@ class CasesPlot:
     def __call__(self, plot_name=None, ax=None, **kwargs):
         """x.__call__() == x()"""
         plot_name = plot_name or ""
+
+        if plot_name.startswith("_"):
+            raise ValueError(f"Invalid plot_name '{plot_name}'")
+
         plot = getattr(self, plot_name, self.grate_full_period_all)
         ax = plot(ax=ax, **kwargs)
         return ax
@@ -188,6 +205,7 @@ class CasesPlot:
         self, ax=None, argentina=True,
         exclude=None, **kwargs
     ):
+
         kwargs.setdefault("confirmed", True)
         kwargs.setdefault("active", False)
         kwargs.setdefault("recovered", False)
@@ -210,20 +228,22 @@ class CasesPlot:
         exclude = [] if exclude is None else exclude
         exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
 
-        for code in sorted(PROVINCIAS):
+        for code in sorted(CODE_TO_POVINCIA):
             if code in exclude:
                 continue
             self.grate_full_period(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
+        ticks = np.arange(len(labels))
+
+        ax.set_xticks(ticks=ticks)
+        ax.set_xticklabels(labels=labels, rotation=45)
 
         ax.set_title(
             "COVID-19 Grow in Argentina by Province\n"
             f"{labels[0]} - {labels[-1]}")
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
-
-        ax.set_xticklabels(labels=labels, rotation=45)
 
         return ax
 
@@ -246,6 +266,10 @@ class CasesPlot:
         pdf.plot.line(ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
+        ticks = np.arange(len(labels))
+
+        ax.set_xticks(ticks=ticks)
+        ax.set_xticklabels(labels=labels, rotation=45)
 
         ax.set_title(
             f"COVID-19 Grow in {prov_name}\n"
@@ -253,7 +277,6 @@ class CasesPlot:
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
 
-        ax.set_xticklabels(labels=labels, rotation=45)
         ax.legend()
 
         return ax
@@ -284,12 +307,16 @@ class CasesPlot:
         exclude = [] if exclude is None else exclude
         exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
 
-        for code in sorted(PROVINCIAS):
+        for code in sorted(CODE_TO_POVINCIA):
             if code in exclude:
                 continue
             self.time_serie(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
+        ticks = np.arange(len(labels))
+
+        ax.set_xticks(ticks=ticks)
+        ax.set_xticklabels(labels=labels, rotation=45)
 
         ax.set_title(
             "COVID-19 cases by date in Argentina by Province\n"
@@ -297,7 +324,6 @@ class CasesPlot:
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
 
-        ax.set_xticklabels(labels=labels, rotation=45)
         return ax
 
     def time_serie(
@@ -320,14 +346,16 @@ class CasesPlot:
         pdf.plot.line(ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
+        ticks = np.arange(len(labels))
+
+        ax.set_xticks(ticks=ticks)
+        ax.set_xticklabels(labels=labels, rotation=45)
 
         ax.set_title(
             f"COVID-19 cases by date in {prov_name}\n"
             f"{labels[0]} - {labels[-1]}")
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
-
-        ax.set_xticklabels(labels=labels, rotation=45)
 
         ax.legend()
 
@@ -356,7 +384,8 @@ class CasesPlot:
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
 
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+        labels = [d.date() for d in self.cstats.dates]
+        ax.set_xticklabels(labels, rotation=45)
         ax.legend()
 
         return ax
@@ -452,7 +481,12 @@ class CasesFrame:
         prov_norm = norm(provincia)
         for name, code in PROVINCIAS.items():
             if norm(name) == prov_norm or norm(code) == prov_norm:
-                return name, code
+                return CODE_TO_POVINCIA[code], code
+
+        for alias, code in PROVINCIAS_ALIAS.items():
+            if prov_norm == norm(alias):
+                return CODE_TO_POVINCIA[code], code
+
         raise ValueError(f"Unknown provincia'{provincia}'")
 
     def restore_time_serie(self):

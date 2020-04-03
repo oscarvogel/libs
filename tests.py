@@ -46,20 +46,35 @@ LOCAL_CASES = PATH / "databases" / "cases.xlsx"
 
 
 # =============================================================================
-# TESTS
+# SETUP
 # =============================================================================
 
 def setup_function(func):
     arcovid19.CACHE.clear()
 
 
-def test_load_cases_local():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
-    assert isinstance(df, arcovid19.CasesFrame)
-
+# =============================================================================
+# INTEGRATION
+# =============================================================================
 
 def test_load_cases_remote():
-    df = arcovid19.load_cases()
+    local = arcovid19.load_cases(url=LOCAL_CASES)
+    local = local[local.dates]
+    local[local.isnull()] = 143
+
+    remote = arcovid19.load_cases()
+    remote = remote[remote.dates]
+    remote[remote.isnull()] = 143
+
+    assert np.all(local == remote)
+
+
+# =============================================================================
+# UNITEST
+# =============================================================================
+
+def test_load_cases_local():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
     assert isinstance(df, arcovid19.CasesFrame)
 
 
@@ -138,6 +153,12 @@ def test_restore_time_serie():
 # PLOTS
 # =============================================================================
 
+def test_invalid_plot_name():
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+    with pytest.raises(ValueError):
+        df.plot("_plot_df")
+
+
 @check_figures_equal()
 def test_plot_call(fig_test, fig_ref):
     df = arcovid19.load_cases(url=LOCAL_CASES)
@@ -193,7 +214,7 @@ def test_plot_grate_full_period_all_equivalent_calls(fig_test, fig_ref):
 
     cases.plot.grate_full_period(
         deceased=False, active=False, recovered=False, ax=exp_ax)
-    for prov in sorted(arcovid19.PROVINCIAS):
+    for prov in sorted(arcovid19.CODE_TO_POVINCIA):
         cases.plot.grate_full_period(
             prov, deceased=False, active=False, recovered=False, ax=exp_ax)
 
@@ -242,7 +263,7 @@ def test_plot_time_serie_all_equivalent_calls(fig_test, fig_ref):
 
     cases.plot.time_serie(
         deceased=False, active=False, recovered=False, ax=exp_ax)
-    for prov in sorted(arcovid19.PROVINCIAS):
+    for prov in sorted(arcovid19.CODE_TO_POVINCIA):
         cases.plot.time_serie(
             prov, deceased=False, active=False, recovered=False, ax=exp_ax)
 
@@ -273,3 +294,24 @@ def test_plot_boxplot(fig_test, fig_ref):
     # expected
     exp_ax = fig_ref.subplots()
     df.plot.boxplot(ax=exp_ax)
+
+
+# =============================================================================
+# BUGS
+# =============================================================================
+
+@pytest.mark.parametrize(
+    "plot_name", [
+        "time_serie", "time_serie_all",
+        "grate_full_period", "grate_full_period_all"])
+def test_plot_all_dates_ticks(plot_name):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    expected = [str(d.date()) for d in df.dates]
+
+    ax = df.plot(plot_name)
+    labels = [l.get_text() for l in ax.get_xticklabels()]
+    ticks = ax.get_xticks()
+
+    assert labels == expected
+    assert len(labels) == len(ticks)
