@@ -22,11 +22,12 @@ __all__ = [
     "DEFAULT_CACHE_DIR",
     "CACHE",
     "CACHE_EXPIRE",
+    "CODE_TO_POVINCIA",
     "CasesPlot",
     "CasesFrame",
     "load_cases"]
 
-__version__ = "0.4"
+__version__ = "0.4.1"
 
 
 # =============================================================================
@@ -106,10 +107,9 @@ PROVINCIAS_ALIAS = {
     "Santiago del Estero": "SDE"
 }
 
-# esto guarda el último alias como el nombre correcto de la provincia
+#: List of Argentina provinces
 CODE_TO_POVINCIA = {
     v: k for k, v in it.chain(PROVINCIAS.items(), PROVINCIAS_ALIAS.items())}
-
 
 STATUS = {
     'Recuperado': 'R',
