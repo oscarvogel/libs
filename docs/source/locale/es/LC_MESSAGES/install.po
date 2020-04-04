@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ivco19
+# This file is distributed under the same license as the arcovid19 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: arcovid19 0.4.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-03 19:19-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../source/install/cli.rst:2
+msgid "Command line interface (CLI)"
+msgstr ""
+
+#: ../../source/install/cli.rst:4
+msgid ""
+"After install arcovid19 you also have a command line app to download the "
+"data as csv."
+msgstr ""
+
+#: ../../source/install/install.rst:2
+msgid "Installation"
+msgstr ""
+
+#: ../../source/install/install.rst:4
+msgid "This is the recommended way to install arcovid-libs."
+msgstr ""
+
+#: ../../source/install/install.rst:7
+msgid "Installing  with pip"
+msgstr ""
+
+#: ../../source/install/install.rst:9
+msgid ""
+"Make sure that the Python interpreter can load arcovid-libs code. The "
+"most convenient way to do this is to use virtualenv, virtualenvwrapper, "
+"and pip."
+msgstr ""
+
+#: ../../source/install/install.rst:12
+msgid "After setting up and activating the virtualenv, run the following command:"
+msgstr ""
+
+#: ../../source/install/install.rst:18
+msgid "That should be it all."
+msgstr ""
+
+#: ../../source/install/install.rst:21
+msgid "Installing the development version"
+msgstr ""
+
+#: ../../source/install/install.rst:23
+msgid ""
+"If you’d like to be able to update your corral code occasionally with the"
+" latest bug fixes and improvements, follow these instructions:"
+msgstr ""
+
+#: ../../source/install/install.rst:26
+msgid ""
+"Make sure that you have Git installed and that you can run its commands "
+"from a shell. (Enter *git help* at a shell prompt to test this.)"
+msgstr ""
+
+#: ../../source/install/install.rst:29
+msgid "Check out arcovid-libs main development branch like so:"
+msgstr ""
+
+#: ../../source/install/install.rst:35
+msgid "This will create a directory libs in your current directory."
+msgstr ""
+

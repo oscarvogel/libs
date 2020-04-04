@@ -1,0 +1,138 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ivco19
+# This file is distributed under the same license as the arcovid19 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: arcovid19 0.4.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-03 19:19-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../source/api/arcovid19.rst:2
+msgid "arcovid19 module"
+msgstr ""
+
+#: arcovid19:1 of
+msgid ""
+"Utilities to access different Argentina-Related databases of COVID-19 "
+"data from the IATE task force."
+msgstr ""
+
+#: arcovid19.DEFAULT_CACHE_DIR:1 of
+msgid "Default cache location, (default=~/arcovid_19_data/_cache_)"
+msgstr ""
+
+#: arcovid19.CACHE:1 of
+msgid "Default cache instance"
+msgstr ""
+
+#: arcovid19.CACHE_EXPIRE:1 of
+msgid "Time to expire of every load_cases call in seconds"
+msgstr ""
+
+#: arcovid19.CODE_TO_POVINCIA:1 of
+msgid "List of Argentina provinces"
+msgstr ""
+
+#: arcovid19.CasesFrame:1 arcovid19.CasesPlot:1 of
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: arcovid19.CasesFrame:1 of
+msgid "Wrapper around the `load_cases()` table."
+msgstr ""
+
+#: arcovid19.CasesFrame:3 of
+msgid "This class adds functionalities around the dataframe."
+msgstr ""
+
+#: arcovid19.CasesFrame.dates:1 of
+msgid "Returns the dates for which we have data."
+msgstr ""
+
+#: arcovid19.CasesFrame.dates:3 of
+msgid "Useful to use as time column (row) list for wide (long) format."
+msgstr ""
+
+#: arcovid19.CasesFrame.get_provincia_name_code:1 of
+msgid "Resolve and validate the name and code of a given provincia name or code."
+msgstr ""
+
+#: arcovid19.CasesFrame.grate_full_period:1 of
+msgid "Estimates growth rate for the period where we have data"
+msgstr ""
+
+#: arcovid19.CasesFrame.last_growth_rate:1 of
+msgid ""
+"Returns the last available growth rate for the whole country if provincia"
+" is None, or for only the named region."
+msgstr ""
+
+#: arcovid19.CasesFrame.restore_time_serie:1 of
+msgid "Retrieve a new pandas.DataFrame but with observations by Date."
+msgstr ""
+
+#: arcovid19.CasesFrame.tot_cases:1 of
+msgid "Returns latest value of total confirmed cases"
+msgstr ""
+
+#: arcovid19.load_cases:1 of
+msgid ""
+"Utility function to parse all the actual cases of the COVID-19 in "
+"Argentina."
+msgstr ""
+
+#: arcovid19.load_cases of
+msgid "Parameters"
+msgstr ""
+
+#: arcovid19.load_cases:5 of
+msgid "The url for the excel table to parse. Default is ivco19 team table."
+msgstr ""
+
+#: arcovid19.load_cases:7 of
+msgid "If you want to use the local cache or retrieve a new value."
+msgstr ""
+
+#: arcovid19.load_cases of
+msgid "Returns"
+msgstr ""
+
+#: arcovid19.load_cases:10 of
+msgid ""
+"**CasesFrame** -- It features a pandas multi index, with the following "
+"hierarchy:  - level 0: cod_provincia - Argentina states - level 1: "
+"cod_status - Four states of disease patients (R, C, A, D)"
+msgstr ""
+
+#: arcovid19.load_cases:10 of
+msgid ""
+"**CasesFrame** -- It features a pandas multi index, with the following "
+"hierarchy:"
+msgstr ""
+
+#: arcovid19.load_cases:12 of
+msgid "level 0: cod_provincia - Argentina states"
+msgstr ""
+
+#: arcovid19.load_cases:13 of
+msgid "level 1: cod_status - Four states of disease patients (R, C, A, D)"
+msgstr ""
+
+#: arcovid19.load_cases of
+msgid "Return type"
+msgstr ""
+
+#: ../../source/api/modules.rst:2
+msgid "API"
+msgstr ""
+

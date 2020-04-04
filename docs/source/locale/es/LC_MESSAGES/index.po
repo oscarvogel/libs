@@ -1,0 +1,142 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ivco19
+# This file is distributed under the same license as the arcovid19 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: arcovid19 0.4.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-03 19:19-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../source/index.rst:22 ../../source/index.rst:96
+msgid "Contents:"
+msgstr ""
+
+#: ../../source/index.rst:7
+msgid "Arcovid19"
+msgstr ""
+
+#: ../../source/index.rst:9
+msgid "|Build Status| |Python 3| |BSD-3| |Documentation Status| |PyPI|"
+msgstr ""
+
+#: ../../source/index.rst:26
+msgid ""
+"Libs is a package to use the COV-19 data analysis tool. It has a module "
+"written in python called arcovid19 dedicated to the analysis of all real "
+"cases of COVID-19 in Argentina."
+msgstr ""
+
+#: ../../source/index.rst:29
+msgid ""
+"Arcovid19 is made up of two classes CasesFrame and CasesPlot, these tools"
+" are used to report the analysis of COVID-19 data in Argentina from "
+"tables and visualizations. Furthermore, the CasesFrame class inherits and"
+" adds functionalities to the DataFrame class of Pandas."
+msgstr ""
+
+#: ../../source/index.rst:33
+msgid "License"
+msgstr ""
+
+#: ../../source/index.rst:35
+msgid ""
+"arcovid19 is under `The BSD-3 License "
+"<https://github.com/ivco19/libs/blob/master/LICENSE>`__"
+msgstr ""
+
+#: ../../source/index.rst:38
+msgid ""
+"The BSD 3-clause license allows you almost unlimited freedom with the "
+"software so long as you include the BSD copyright and license notice in "
+"it (found in Fulltext)."
+msgstr ""
+
+#: ../../source/index.rst:41
+msgid "Citation"
+msgstr ""
+
+#: ../../source/index.rst:43
+msgid ""
+"Please acknowledge arcovid19 in any research report or publication that "
+"requires citation of any author's work. Our suggested acknowledgment is:"
+msgstr ""
+
+#: ../../source/index.rst:46
+msgid ""
+"The authors acknowledge the arcovid19 project that contributed to the "
+"research reported here. <https://github.com/ivco19/libs/>"
+msgstr ""
+
+#: ../../source/index.rst:49
+msgid "**ABOUT THE DATA**"
+msgstr ""
+
+#: ../../source/index.rst:52
+msgid "Please cite:"
+msgstr ""
+
+#: ../../source/index.rst:54
+msgid ""
+"Luczywo, N. A., Daza, V., Koraj, M., Dominguez, M., Lares, M., Paz, D. "
+"J., Quiroga, R., Rios, M. E. D. L., Sánchez, B. O., Stasyszyn, F., & "
+"Cabral, J. B. (2020). Infecciones de COVID-19 en Argentina. Unpublished. "
+"https://doi.org/10.13140/RG.2.2.22519.78246"
+msgstr ""
+
+#: ../../source/index.rst:60
+msgid "BibText::"
+msgstr ""
+
+#: ../../source/index.rst:78
+msgid "Raw Data"
+msgstr ""
+
+#: ../../source/index.rst:80
+msgid ""
+"`Viewer <https://docs.google.com/spreadsheets/d/e/2PACX-"
+"1vTfinng5SDBH9RSJMHJk28dUlW3VVSuvqaBSGzU-"
+"fYRTVLCzOkw1MnY17L2tWsSOppHB96fr21Ykbyv/pub>`__"
+msgstr ""
+
+#: ../../source/index.rst:81
+msgid ""
+"`CSV "
+"<https://raw.githubusercontent.com/ivco19/libs/master/databases/cases.csv>`__"
+msgstr ""
+
+#: ../../source/index.rst:82
+msgid ""
+"`XLSX "
+"<https://raw.githubusercontent.com/ivco19/libs/master/databases/cases.xlsx>`__"
+msgstr ""
+
+#: ../../source/index.rst:86
+msgid "Contact:"
+msgstr ""
+
+#: ../../source/index.rst:88
+msgid "For bugs or question please contact"
+msgstr ""
+
+#: ../../source/index.rst:90
+msgid "**Juan B. Cabral:** jbcabral@unc.edu.ar"
+msgstr ""
+
+#: ../../source/index.rst:91
+msgid "**Bruno Sánchez:** bruno.sanchez@duke.edu"
+msgstr ""
+
+#: ../../source/index.rst:92
+msgid "**Vanessa Daza:** vanessa.daza@unc.edu.ar"
+msgstr ""
+

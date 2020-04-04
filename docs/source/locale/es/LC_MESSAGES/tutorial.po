@@ -1,0 +1,174 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, ivco19
+# This file is distributed under the same license as the arcovid19 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: arcovid19 0.4.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-03 19:19-0300\n"
+"PO-Revision-Date: 2020-04-03 20:11-0300\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"X-Generator: Poedit 2.2.4\n"
+
+#: ../../source/tutorial/parte1.ipynb:9
+#, fuzzy
+msgid "Part 1 - Load cases"
+msgstr "Parte 1 - Casos de carga"
+
+#: ../../source/tutorial/parte1.ipynb:16
+msgid ""
+"The first step is to import **arcovid19**, then we load the COVID-19 "
+"database from Argentina (`CASES_URL <https://github.com/ivco19/libs/raw/"
+"master/databases/cases.xlsx>`__). As a result, a table is obtained that "
+"presents a multiple pandas index, with the following hierarchy:"
+msgstr ""
+"El primer paso es importar ** ** arcovid19, a continuación, cargamos la "
+"base de datos COVID-19 de Argentina ( `CASES_URL <https://github.com/"
+"ivco19/libs/raw/master/databases/cases.xlsx>` __ ). Como resultado, una "
+"tabla se obtiene que presenta un índice de pandas múltiple, con la "
+"siguiente jerarquía:"
+
+#: ../../source/tutorial/parte1.ipynb:18
+msgid "**level 0:** cod_provincia - Argentina states"
+msgstr "** Nivel 0: ** - cod_provincia Unidos Argentina"
+
+#: ../../source/tutorial/parte1.ipynb:20
+msgid ""
+"**level 1:** cod_status - Four states of disease patients (**R** = "
+"Recovered, **C** = Confirmed, **A** = Active, **D** = Dead)"
+msgstr ""
+
+#: ../../source/tutorial/parte1.ipynb:775
+msgid "Remember that the *cases* object has the properties of a DataFrame."
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:9
+msgid "Part 2 - Functions"
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:16
+msgid ""
+"After loading the database we can use some of the functions of the class "
+"object *Cases Frame*."
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:39
+msgid ""
+"Using the method *last_growth_rate* and specifying the *province* "
+"argument of the function, we obtain the latest growth rate available for "
+"the whole country or by province."
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:41
+msgid ""
+"If provincia = None, the method will yield the value of Argentina’s last "
+"growth rate."
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:75
+msgid ""
+"If you want to get the latest growth rate for any particular province, "
+"you must replace None for the full name of the province."
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:135
+msgid ""
+"In the case that you want to estimate the growth rate in the period "
+"where we have data by province or country, you can use the "
+"*grateful_full_period* method."
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:137
+msgid ""
+"Again, if the province argument equals None, the series shown "
+"corresponds to Argentina."
+msgstr ""
+
+#: ../../source/tutorial/parte2.ipynb:218
+msgid ""
+"In the case that you want the observations by date, that is, not "
+"cumulative, you can use the *restore_time_serie* method as shown in the "
+"next cell."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:9
+msgid "Part 3 - Visualization of cases"
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:16
+msgid ""
+"In this part of the tutorial you can find some of the functions of the "
+"\\* Cases Plot \\* class, in particular this class inherits the "
+"properties of the Matplotlib class."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:18
+msgid "As usual the first step will be to import the arcovid19 module."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:34
+msgid ""
+"The next cell performs a cache cleanup, as arcovid19 saves a one-hour "
+"chache for every request made to the online database. With this action, "
+"we make sure that we are using an updated database."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:68
+msgid "We loaded the COVID-19 database from Argentina."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:83
+msgid ""
+"The *plot* method shows the trend to date of each of the provinces along "
+"with that of Argentina. By default, it shows confirmed cases, but you "
+"can also choose to view active, recovered and dead cases."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:136
+msgid ""
+"Then if you are interested in a particular province, you just have to "
+"add *grate_full_periode* and specify the name of the province. If you do "
+"not enter the name of any province the tool will show you the cases of "
+"Argentina."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:167
+msgid ""
+"Also, if you want to observe the behavior of observations by date, you "
+"can use the following graphical representations."
+msgstr ""
+
+#: ../../source/tutorial/parte3.ipynb:350
+msgid ""
+"Finally, at the following link `part 3 <https://www.youtube.com/watch?"
+"v=VBRtnJFF6UQ&feature=youtu.be&ab_channel=JuanBC>`__ you will find an "
+"updated guide on March 28, 2020, of part 3 of the tutorial."
+msgstr ""
+
+#: ../../source/tutorial/tutorial.rst:2
+msgid "Tutorial"
+msgstr ""
+
+#: ../../source/tutorial/tutorial.rst:4
+msgid ""
+"This section contains a step-by-step tutorial with examples for using "
+"the **arcovid19** tools."
+msgstr ""
+
+#: ../../source/tutorial/tutorial.rst:6
+msgid ""
+"In part 1 of the tutorial, we explained loading data using arcovid19 and "
+"some of the methods and attributes inherited from the DataFrame class. "
+"Part 2 shows the implementation of the *Cases Frame* class methods on "
+"the data basis. Lastly, in part 3 of this tutorial, we share the "
+"visualization of the COVID-19 database using the tools provided by the "
+"*Plot Cases* class from arcovid19."
+msgstr ""
